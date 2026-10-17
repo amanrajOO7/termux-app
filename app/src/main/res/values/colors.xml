@@ -4,7 +4,7 @@
     <color name="drawer_surface_light">#FFF6F6F6</color>
     <color name="drawer_surface_dark">#FF121212</color>
 
-    <color name="session_item_selected_light">#FFE2E2E2</color>
+    <color name="session_item_selected_light">#FFDADADA</color>
     <color name="session_item_selected_dark">#FF2A2C2E</color>
 
     <color name="session_item_ripple_light">#1F000000</color>

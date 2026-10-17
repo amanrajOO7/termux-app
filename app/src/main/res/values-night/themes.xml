@@ -32,6 +32,7 @@
         <item name="termuxSessionItemBackground">@drawable/session_background_black_selected</item>
         <item name="termuxSessionItemTitleColor">@color/session_item_title_dark</item>
         <item name="termuxSessionItemSubtitleColor">@color/session_item_subtitle_dark</item>
+        <item name="termuxDrawerButtonTint">@color/session_item_selected_dark</item>
 
         <!-- Extra keys colors. -->
         <item name="extraKeysButtonTextColor">@color/white</item>

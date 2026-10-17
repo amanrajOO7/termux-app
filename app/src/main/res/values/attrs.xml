@@ -7,4 +7,7 @@
     <attr name="termuxSessionItemBackground" format="reference" />
     <attr name="termuxSessionItemTitleColor" format="reference|color" />
     <attr name="termuxSessionItemSubtitleColor" format="reference|color" />
+
+    <!-- Left drawer tonal button (new session). -->
+    <attr name="termuxDrawerButtonTint" format="reference|color" />
 </resources>
