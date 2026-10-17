@@ -1,0 +1,10 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- Terminal window with a prompt and a plus sign. -->
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M4,4H20C21.1,4 22,4.9 22,6V18C22,19.1 21.1,20 20,20H4C2.9,20 2,19.1 2,18V6C2,4.9 2.9,4 4,4ZM4,6V18H20V6ZM6.2,8.6L7.6,7.2L11.4,11L7.6,14.8L6.2,13.4L8.6,11ZM13,12H15V10H17V12H19V14H17V16H15V14H13Z" />
+</vector>

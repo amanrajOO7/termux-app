@@ -106,20 +106,22 @@
                         app:icon="@drawable/ic_drawer_keyboard"
                         app:iconGravity="textStart"
                         app:iconPadding="0dp"
+                        app:iconSize="28dp"
                         app:iconTint="?attr/termuxSessionItemTitleColor" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/new_session_button"
-                        style="@style/TermuxActivity.Drawer.NewSessionButton"
+                        style="?android:attr/buttonBarButtonStyle"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
                         android:layout_weight="1"
                         android:contentDescription="@string/action_new_session"
                         android:minHeight="48dp"
-                        app:icon="@drawable/ic_drawer_add"
+                        app:icon="@drawable/ic_drawer_new_session"
                         app:iconGravity="textStart"
-                        app:iconPadding="0dp" />
+                        app:iconPadding="0dp"
+                        app:iconSize="28dp"
+                        app:iconTint="?attr/termuxSessionItemTitleColor" />
                 </LinearLayout>
             </LinearLayout>
 
