@@ -2,4 +2,9 @@
 <resources>
     <attr name="termuxActivityDrawerBackground" format="reference" />
     <attr name="termuxActivityDrawerImageTint" format="reference" />
+
+    <!-- Left drawer session list item. -->
+    <attr name="termuxSessionItemBackground" format="reference" />
+    <attr name="termuxSessionItemTitleColor" format="reference|color" />
+    <attr name="termuxSessionItemSubtitleColor" format="reference|color" />
 </resources>

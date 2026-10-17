@@ -1,3 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Left drawer surface and session list item colors. -->
+    <color name="drawer_surface_light">#FFF6F6F6</color>
+    <color name="drawer_surface_dark">#FF121212</color>
+
+    <color name="session_item_selected_light">#FFE2E2E2</color>
+    <color name="session_item_selected_dark">#FF2A2C2E</color>
+
+    <color name="session_item_ripple_light">#1F000000</color>
+    <color name="session_item_ripple_dark">#33FFFFFF</color>
+
+    <color name="session_item_title_light">#DE000000</color>
+    <color name="session_item_title_dark">#FFFFFFFF</color>
+
+    <color name="session_item_subtitle_light">#99000000</color>
+    <color name="session_item_subtitle_dark">#B3FFFFFF</color>
+
+    <!-- Session status indicator colors. -->
+    <color name="session_status_running">#FF4CAF50</color>
+    <color name="session_status_finished">#FF9E9E9E</color>
+    <color name="session_status_failed">#FFE53935</color>
 </resources>

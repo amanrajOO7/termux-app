@@ -36,8 +36,11 @@
 
         <!-- Left drawer. -->
         <item name="buttonBarButtonStyle">@style/TermuxActivity.Drawer.ButtonBarStyle.Light</item>
-        <item name="termuxActivityDrawerBackground">@color/white</item>
+        <item name="termuxActivityDrawerBackground">@color/drawer_surface_light</item>
         <item name="termuxActivityDrawerImageTint">@color/black</item>
+        <item name="termuxSessionItemBackground">@drawable/session_background_selected</item>
+        <item name="termuxSessionItemTitleColor">@color/session_item_title_light</item>
+        <item name="termuxSessionItemSubtitleColor">@color/session_item_subtitle_light</item>
 
         <!-- Extra keys colors. -->
         <item name="extraKeysButtonTextColor">@color/white</item>

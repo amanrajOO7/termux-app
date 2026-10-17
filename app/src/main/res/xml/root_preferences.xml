@@ -2,12 +2,14 @@
 
     <Preference
         app:key="termux"
+        app:icon="@drawable/ic_preference_terminal"
         app:title="@string/termux_preferences_title"
         app:summary="@string/termux_preferences_summary"
         app:fragment="com.termux.app.fragments.settings.TermuxPreferencesFragment"/>
 
     <Preference
         app:key="termux_api"
+        app:icon="@drawable/ic_preference_plugin"
         app:title="@string/termux_api_preferences_title"
         app:summary="@string/termux_api_preferences_summary"
         app:isPreferenceVisible="false"
@@ -15,6 +17,7 @@
 
     <Preference
         app:key="termux_float"
+        app:icon="@drawable/ic_preference_plugin"
         app:title="@string/termux_float_preferences_title"
         app:summary="@string/termux_float_preferences_summary"
         app:isPreferenceVisible="false"
@@ -22,6 +25,7 @@
 
     <Preference
         app:key="termux_tasker"
+        app:icon="@drawable/ic_preference_plugin"
         app:title="@string/termux_tasker_preferences_title"
         app:summary="@string/termux_tasker_preferences_summary"
         app:isPreferenceVisible="false"
@@ -29,6 +33,7 @@
 
     <Preference
         app:key="termux_widget"
+        app:icon="@drawable/ic_preference_plugin"
         app:title="@string/termux_widget_preferences_title"
         app:summary="@string/termux_widget_preferences_summary"
         app:isPreferenceVisible="false"
@@ -36,12 +41,14 @@
 
     <Preference
         app:key="about"
+        app:icon="@drawable/ic_preference_info"
         app:title="@string/about_preference_title"
         app:persistent="false"/>
     <!-- app:layout="@layout/preference_markdown_text" -->
 
     <Preference
         app:key="donate"
+        app:icon="@drawable/ic_preference_donate"
         app:title="@string/donate_preference_title"
         app:persistent="false"
         app:isPreferenceVisible="false"/>
