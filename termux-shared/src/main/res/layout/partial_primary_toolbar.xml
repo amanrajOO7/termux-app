@@ -10,13 +10,15 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimaryDark"
+        android:background="?attr/colorSurface"
         android:gravity="center_vertical"
         android:minHeight="?attr/actionBarSize"
-        android:theme="@style/ThemeOverlay.AppCompat.DayNight.ActionBar"
+        android:theme="@style/ThemeOverlay.BaseToolbar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.DayNight"
         app:titleTextAppearance="@style/TextAppearance.Widget.BaseToolbar.Title"
-        app:subtitleTextAppearance="@style/TextAppearance.Widget.BaseToolbar.Subtitle">
+        app:titleTextColor="?attr/colorOnSurface"
+        app:subtitleTextAppearance="@style/TextAppearance.Widget.BaseToolbar.Subtitle"
+        app:subtitleTextColor="?attr/colorOnSurfaceVariant">
     </androidx.appcompat.widget.Toolbar>
 
 </LinearLayout>

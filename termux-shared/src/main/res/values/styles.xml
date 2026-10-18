@@ -11,44 +11,12 @@
         <item name="android:textSize">12sp</item>
     </style>
 
-
-
-
-
     <!--
-     BaseDialog Title Panel materialAlertDialogTitlePanelStyle.
-     https://github.com/material-components/material-components-android/blob/1.4.0/lib/java/com/google/android/material/dialog/res/layout/mtrl_alert_dialog_title.xml#L29
-     https://github.com/material-components/material-components-android/blob/1.4.0/lib/java/com/google/android/material/dialog/res/values/themes.xml#L71
+     BaseToolbar theme overlay. The toolbar uses the surface color of the activity theme, so
+     its icons (navigation icon, overflow menu) must use the color shown on top of the surface.
     -->
-    <style name="BaseDialog.Title.Panel" parent="@style/MaterialAlertDialog.MaterialComponents.Title.Panel">
-        <!-- Title background. -->
-        <item name="android:background">@color/red_400</item>
-
-        <!-- Center Title. -->
-        <item name="android:paddingTop">14dp</item>
-        <item name="android:paddingBottom">14dp</item>
-    </style>
-
-
-    <!--
-     BaseDialog Message Text Light materialAlertDialogBodyTextStyle.
-     https://github.com/material-components/material-components-android/blob/1.4.0/lib/java/com/google/android/material/dialog/res/layout/mtrl_alert_dialog.xml#L59
-     https://github.com/material-components/material-components-android/blob/1.4.0/lib/java/com/google/android/material/dialog/res/values/themes_base.xml#L133
-    -->
-    <style name="BaseDialog.Message.Text.Light" parent="@style/MaterialAlertDialog.MaterialComponents.Body.Text">
-        <!-- Text color. -->
-        <item name="android:textColorPrimary">@color/black</item>
-        <item name="android:textColorLink">@color/blue_link_light</item>
-    </style>
-
-    <!--
-     BaseDialog Message Text Dark materialAlertDialogBodyTextStyle.
-     https://github.com/material-components/material-components-android/blob/1.4.0/lib/java/com/google/android/material/dialog/res/layout/mtrl_alert_dialog.xml#L59
-     https://github.com/material-components/material-components-android/blob/1.4.0/lib/java/com/google/android/material/dialog/res/values/themes_base.xml#L133
-    -->
-    <style name="BaseDialog.Message.Text.Dark" parent="@style/MaterialAlertDialog.MaterialComponents.Body.Text">
-        <!-- Text color. -->
-        <item name="android:textColorLink">@color/blue_link_light</item>
+    <style name="ThemeOverlay.BaseToolbar" parent="">
+        <item name="colorControlNormal">?attr/colorOnSurface</item>
     </style>
 
 
