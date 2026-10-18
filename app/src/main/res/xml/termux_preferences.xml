@@ -18,4 +18,18 @@
         app:summary="@string/termux_terminal_view_preferences_summary"
         app:fragment="com.termux.app.fragments.settings.termux.TerminalViewPreferencesFragment"/>
 
+    <Preference
+        app:key="style_color_scheme"
+        app:icon="@drawable/ic_preference_terminal"
+        app:title="@string/style_color_scheme_title"
+        app:summary="@string/style_color_scheme_summary"
+        app:persistent="false"/>
+
+    <Preference
+        app:key="style_font"
+        app:icon="@drawable/ic_preference_text_size"
+        app:title="@string/style_font_title"
+        app:summary="@string/style_font_summary"
+        app:persistent="false"/>
+
 </PreferenceScreen>
