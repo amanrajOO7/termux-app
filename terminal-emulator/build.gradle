@@ -4,6 +4,11 @@ apply plugin: 'maven-publish'
 android {
     namespace "com.termux.terminal"
     compileSdkVersion project.properties.compileSdkVersion.toInteger()
+
+    // Needed since AGP 8 to get the "release" component that is published below.
+    publishing {
+        singleVariant("release")
+    }
     ndkVersion = System.getenv("JITPACK_NDK_VERSION") ?: project.properties.ndkVersion
 
     defaultConfig {

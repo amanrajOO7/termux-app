@@ -5,6 +5,11 @@ android {
     namespace "com.termux.view"
     compileSdkVersion project.properties.compileSdkVersion.toInteger()
 
+    // Needed since AGP 8 to get the "release" component that is published below.
+    publishing {
+        singleVariant("release")
+    }
+
     dependencies {
         implementation "androidx.annotation:annotation:1.3.0"
         api project(":terminal-emulator")
