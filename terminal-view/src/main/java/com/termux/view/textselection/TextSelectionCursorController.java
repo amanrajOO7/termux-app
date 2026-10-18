@@ -1,8 +1,11 @@
 package com.termux.view.textselection;
 
+import android.content.ActivityNotFoundException;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Rect;
+import android.net.Uri;
 import android.os.Build;
 import android.text.TextUtils;
 import android.view.ActionMode;
@@ -17,6 +20,9 @@ import com.termux.terminal.TerminalBuffer;
 import com.termux.terminal.WcWidth;
 import com.termux.view.R;
 import com.termux.view.TerminalView;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class TextSelectionCursorController implements CursorController {
 
@@ -33,6 +39,15 @@ public class TextSelectionCursorController implements CursorController {
     public final int ACTION_COPY = 1;
     public final int ACTION_PASTE = 2;
     public final int ACTION_MORE = 3;
+    public final int ACTION_SELECT_ALL = 4;
+    public final int ACTION_OPEN_URL = 5;
+
+    /** Matches urls with a scheme, or starting with www. A bare domain is not matched on purpose,
+     * since file names like {@code setup.py} would match too. */
+    private static final Pattern URL_PATTERN = Pattern.compile("(?i)\\b(?:https?|ftp)://[^\\s<>\"']+|\\bwww\\.[^\\s<>\"']+");
+
+    private String mUrlCacheKey;
+    private String mUrlCacheValue;
 
     public TextSelectionCursorController(TerminalView terminalView) {
         this.terminalView = terminalView;
@@ -116,13 +131,21 @@ public class TextSelectionCursorController implements CursorController {
                 ClipboardManager clipboard = (ClipboardManager) terminalView.getContext().getSystemService(Context.CLIPBOARD_SERVICE);
                 menu.add(Menu.NONE, ACTION_COPY, Menu.NONE, R.string.copy_text).setShowAsAction(show);
                 menu.add(Menu.NONE, ACTION_PASTE, Menu.NONE, R.string.paste_text).setEnabled(clipboard != null && clipboard.hasPrimaryClip()).setShowAsAction(show);
+                menu.add(Menu.NONE, ACTION_SELECT_ALL, Menu.NONE, R.string.select_all_text).setShowAsAction(show);
+                menu.add(Menu.NONE, ACTION_OPEN_URL, Menu.NONE, R.string.open_url_text).setVisible(false).setShowAsAction(show);
                 menu.add(Menu.NONE, ACTION_MORE, Menu.NONE, R.string.text_selection_more);
                 return true;
             }
 
             @Override
             public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-                return false;
+                // Only show the open link action if the selection contains a url.
+                MenuItem openUrlItem = menu.findItem(ACTION_OPEN_URL);
+                if (openUrlItem == null) return false;
+                boolean hasUrl = getSelectedUrl() != null;
+                if (openUrlItem.isVisible() == hasUrl) return false;
+                openUrlItem.setVisible(hasUrl);
+                return true;
             }
 
             @Override
@@ -141,6 +164,14 @@ public class TextSelectionCursorController implements CursorController {
                     case ACTION_PASTE:
                         terminalView.stopTextSelectionMode();
                         terminalView.mTermSession.onPasteTextFromClipboard();
+                        break;
+                    case ACTION_SELECT_ALL:
+                        selectAll();
+                        break;
+                    case ACTION_OPEN_URL:
+                        String url = getSelectedUrl();
+                        terminalView.stopTextSelectionMode();
+                        openUrl(url);
                         break;
                     case ACTION_MORE:
                         // We first store the selected text in case TerminalViewClient needs the
@@ -177,7 +208,7 @@ public class TextSelectionCursorController implements CursorController {
 
             @Override
             public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-                return false;
+                return callback.onPrepareActionMode(mode, menu);
             }
 
             @Override
@@ -212,6 +243,59 @@ public class TextSelectionCursorController implements CursorController {
                 outRect.set(x1, top, x2, bottom);
             }
         }, ActionMode.TYPE_FLOATING);
+    }
+
+    /** Select everything in the transcript and on the screen. */
+    private void selectAll() {
+        TerminalBuffer screen = terminalView.mEmulator.getScreen();
+        final int scrollRows = screen.getActiveRows() - terminalView.mEmulator.mRows;
+
+        mSelX1 = 0;
+        mSelY1 = -scrollRows;
+        mSelX2 = terminalView.mEmulator.mColumns - 1;
+        mSelY2 = terminalView.mEmulator.mRows - 1;
+
+        mStartHandle.positionAtCursor(mSelX1, mSelY1, true);
+        mEndHandle.positionAtCursor(mSelX2 + 1, mSelY2, true);
+        terminalView.invalidate();
+
+        if (mActionMode != null) {
+            mActionMode.invalidate();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                mActionMode.invalidateContentRect();
+            }
+        }
+    }
+
+    /** Get the first url in the selected text, or {@code null} if there is none. */
+    @Nullable
+    private String getSelectedUrl() {
+        String key = mSelX1 + ":" + mSelY1 + ":" + mSelX2 + ":" + mSelY2;
+        if (key.equals(mUrlCacheKey)) return mUrlCacheValue;
+
+        String url = null;
+        String text = getSelectedText();
+        if (!TextUtils.isEmpty(text)) {
+            Matcher matcher = URL_PATTERN.matcher(text);
+            if (matcher.find()) {
+                url = matcher.group();
+                if (!url.contains("://")) url = "https://" + url;
+            }
+        }
+
+        mUrlCacheKey = key;
+        mUrlCacheValue = url;
+        return url;
+    }
+
+    private void openUrl(@Nullable String url) {
+        if (url == null) return;
+        try {
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            terminalView.getContext().startActivity(intent);
+        } catch (ActivityNotFoundException | SecurityException ignored) {
+        }
     }
 
     @Override

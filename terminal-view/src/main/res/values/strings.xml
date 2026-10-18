@@ -1,5 +1,7 @@
 <resources>
   <string name="paste_text">Paste</string>
   <string name="copy_text">Copy</string>
+  <string name="select_all_text">Select all</string>
+  <string name="open_url_text">Open link</string>
   <string name="text_selection_more">More…</string>
 </resources>

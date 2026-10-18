@@ -28,6 +28,7 @@ import android.widget.Toast;
 
 import com.termux.R;
 import com.termux.app.api.file.FileReceiverActivity;
+import com.termux.app.terminal.ContextActionSheet;
 import com.termux.app.terminal.TermuxActivityRootView;
 import com.termux.app.terminal.TermuxTerminalSessionActivityClient;
 import com.termux.app.terminal.io.TermuxTerminalExtraKeys;
@@ -176,18 +177,6 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
     private float mTerminalToolbarDefaultHeight;
 
 
-    private static final int CONTEXT_MENU_SELECT_URL_ID = 0;
-    private static final int CONTEXT_MENU_SHARE_TRANSCRIPT_ID = 1;
-    private static final int CONTEXT_MENU_SHARE_SELECTED_TEXT = 10;
-    private static final int CONTEXT_MENU_AUTOFILL_USERNAME = 11;
-    private static final int CONTEXT_MENU_AUTOFILL_PASSWORD = 2;
-    private static final int CONTEXT_MENU_RESET_TERMINAL_ID = 3;
-    private static final int CONTEXT_MENU_KILL_PROCESS_ID = 4;
-    private static final int CONTEXT_MENU_STYLING_ID = 5;
-    private static final int CONTEXT_MENU_TOGGLE_KEEP_SCREEN_ON = 6;
-    private static final int CONTEXT_MENU_HELP_ID = 7;
-    private static final int CONTEXT_MENU_SETTINGS_ID = 8;
-    private static final int CONTEXT_MENU_REPORT_ID = 9;
 
     private static final String ARG_TERMINAL_TOOLBAR_TEXT_INPUT = "terminal_toolbar_text_input";
     private static final String ARG_ACTIVITY_RECREATED = "activity_recreated";
@@ -626,28 +615,13 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
 
 
 
+    /**
+     * The long press menu of the terminal is shown as a bottom sheet. The {@link ContextMenu} is
+     * intentionally left empty, so that the system does not show it, see {@link #showContextSheet()}.
+     */
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
-        TerminalSession currentSession = getCurrentSession();
-        if (currentSession == null) return;
-
-        boolean autoFillEnabled = mTerminalView.isAutoFillEnabled();
-
-        menu.add(Menu.NONE, CONTEXT_MENU_SELECT_URL_ID, Menu.NONE, R.string.action_select_url);
-        menu.add(Menu.NONE, CONTEXT_MENU_SHARE_TRANSCRIPT_ID, Menu.NONE, R.string.action_share_transcript);
-        if (!DataUtils.isNullOrEmpty(mTerminalView.getStoredSelectedText()))
-            menu.add(Menu.NONE, CONTEXT_MENU_SHARE_SELECTED_TEXT, Menu.NONE, R.string.action_share_selected_text);
-        if (autoFillEnabled)
-            menu.add(Menu.NONE, CONTEXT_MENU_AUTOFILL_USERNAME, Menu.NONE, R.string.action_autofill_username);
-        if (autoFillEnabled)
-            menu.add(Menu.NONE, CONTEXT_MENU_AUTOFILL_PASSWORD, Menu.NONE, R.string.action_autofill_password);
-        menu.add(Menu.NONE, CONTEXT_MENU_RESET_TERMINAL_ID, Menu.NONE, R.string.action_reset_terminal);
-        menu.add(Menu.NONE, CONTEXT_MENU_KILL_PROCESS_ID, Menu.NONE, getResources().getString(R.string.action_kill_process, getCurrentSession().getPid())).setEnabled(currentSession.isRunning());
-        menu.add(Menu.NONE, CONTEXT_MENU_STYLING_ID, Menu.NONE, R.string.action_style_terminal);
-        menu.add(Menu.NONE, CONTEXT_MENU_TOGGLE_KEEP_SCREEN_ON, Menu.NONE, R.string.action_toggle_keep_screen_on).setCheckable(true).setChecked(mPreferences.shouldKeepScreenOn());
-        menu.add(Menu.NONE, CONTEXT_MENU_HELP_ID, Menu.NONE, R.string.action_open_help);
-        menu.add(Menu.NONE, CONTEXT_MENU_SETTINGS_ID, Menu.NONE, R.string.action_open_settings);
-        menu.add(Menu.NONE, CONTEXT_MENU_REPORT_ID, Menu.NONE, R.string.action_report_issue);
+        showContextSheet();
     }
 
     /** Hook system menu to show context menu instead. */
@@ -657,57 +631,35 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
         return false;
     }
 
-    @Override
-    public boolean onContextItemSelected(MenuItem item) {
-        TerminalSession session = getCurrentSession();
+    private void showContextSheet() {
+        final TerminalSession currentSession = getCurrentSession();
+        if (currentSession == null) return;
 
-        switch (item.getItemId()) {
-            case CONTEXT_MENU_SELECT_URL_ID:
-                mTermuxTerminalViewClient.showUrlSelection();
-                return true;
-            case CONTEXT_MENU_SHARE_TRANSCRIPT_ID:
-                mTermuxTerminalViewClient.shareSessionTranscript();
-                return true;
-            case CONTEXT_MENU_SHARE_SELECTED_TEXT:
-                mTermuxTerminalViewClient.shareSelectedText();
-                return true;
-            case CONTEXT_MENU_AUTOFILL_USERNAME:
-                mTerminalView.requestAutoFillUsername();
-                return true;
-            case CONTEXT_MENU_AUTOFILL_PASSWORD:
-                mTerminalView.requestAutoFillPassword();
-                return true;
-            case CONTEXT_MENU_RESET_TERMINAL_ID:
-                onResetTerminalSession(session);
-                return true;
-            case CONTEXT_MENU_KILL_PROCESS_ID:
-                showKillSessionDialog(session);
-                return true;
-            case CONTEXT_MENU_STYLING_ID:
-                showStylingDialog();
-                return true;
-            case CONTEXT_MENU_TOGGLE_KEEP_SCREEN_ON:
-                toggleKeepScreenOn();
-                return true;
-            case CONTEXT_MENU_HELP_ID:
-                ActivityUtils.startActivity(this, new Intent(this, HelpActivity.class));
-                return true;
-            case CONTEXT_MENU_SETTINGS_ID:
-                ActivityUtils.startActivity(this, new Intent(this, SettingsActivity.class));
-                return true;
-            case CONTEXT_MENU_REPORT_ID:
-                mTermuxTerminalViewClient.reportIssueFromTranscript();
-                return true;
-            default:
-                return super.onContextItemSelected(item);
+        boolean autoFillEnabled = mTerminalView.isAutoFillEnabled();
+
+        ContextActionSheet sheet = new ContextActionSheet(this)
+            .addQuickAction(R.string.action_paste, true, () -> currentSession.onPasteTextFromClipboard())
+            .addQuickAction(R.string.action_select_url, true, () -> mTermuxTerminalViewClient.showUrlSelection())
+            .addQuickAction(R.string.action_share, true, () -> mTermuxTerminalViewClient.shareSessionTranscript());
+
+        if (!DataUtils.isNullOrEmpty(mTerminalView.getStoredSelectedText()))
+            sheet.addRow(R.string.action_share_selected_text, true, () -> mTermuxTerminalViewClient.shareSelectedText());
+        if (autoFillEnabled) {
+            sheet.addRow(R.string.action_autofill_username, true, () -> mTerminalView.requestAutoFillUsername());
+            sheet.addRow(R.string.action_autofill_password, true, () -> mTerminalView.requestAutoFillPassword());
         }
-    }
 
-    @Override
-    public void onContextMenuClosed(Menu menu) {
-        super.onContextMenuClosed(menu);
-        // onContextMenuClosed() is triggered twice if back button is pressed to dismiss instead of tap for some reason
-        mTerminalView.onContextMenuClosed(menu);
+        sheet.addRow(R.string.action_reset_terminal, true, () -> onResetTerminalSession(currentSession))
+            .addRow(getResources().getString(R.string.action_kill_process, currentSession.getPid()), currentSession.isRunning(),
+                () -> showKillSessionDialog(currentSession))
+            .addRow(R.string.action_style_terminal, true, () -> showStylingDialog())
+            .addSwitchRow(R.string.action_toggle_keep_screen_on, mPreferences.shouldKeepScreenOn(), checked -> toggleKeepScreenOn())
+            .addRow(R.string.action_open_help, true, () -> ActivityUtils.startActivity(this, new Intent(this, HelpActivity.class)))
+            .addRow(R.string.action_open_settings, true, () -> ActivityUtils.startActivity(this, new Intent(this, SettingsActivity.class)))
+            .addRow(R.string.action_report_issue, true, () -> mTermuxTerminalViewClient.reportIssueFromTranscript())
+            // Unset the stored selected text, it is also needed to be unset when the old menu was closed.
+            .setOnDismiss(() -> mTerminalView.onContextMenuClosed(null))
+            .show();
     }
 
     private void showKillSessionDialog(TerminalSession session) {
