@@ -31,6 +31,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.termux.app.extrakeys.ExtraKeysEditor;
 import com.termux.app.style.StylePicker;
 import com.termux.terminal.TerminalColors;
 
@@ -668,6 +669,7 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
         sheet.addRow(R.string.action_reset_terminal, true, () -> onResetTerminalSession(currentSession))
             .addRow(getResources().getString(R.string.action_kill_process, currentSession.getPid()), currentSession.isRunning(),
                 () -> showKillSessionDialog(currentSession))
+            .addRow(R.string.action_edit_extra_keys, true, () -> ExtraKeysEditor.show(this))
             .addRow(R.string.action_style_terminal, true, () -> showStylingDialog())
             .addSwitchRow(R.string.action_toggle_keep_screen_on, mPreferences.shouldKeepScreenOn(), checked -> toggleKeepScreenOn())
             .addRow(R.string.action_open_help, true, () -> ActivityUtils.startActivity(this, new Intent(this, HelpActivity.class)))

@@ -5,6 +5,8 @@ import android.view.Gravity;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+
+import com.google.android.material.button.MaterialButton;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.termux.app.TermuxActivity;
@@ -12,7 +14,9 @@ import com.termux.app.terminal.TermuxTerminalSessionActivityClient;
 import com.termux.app.terminal.TermuxTerminalViewClient;
 import com.termux.shared.logger.Logger;
 import com.termux.shared.termux.extrakeys.ExtraKeysConstants;
+import com.termux.shared.termux.extrakeys.ExtraKeyButton;
 import com.termux.shared.termux.extrakeys.ExtraKeysInfo;
+import com.termux.shared.termux.settings.preferences.TermuxAppSharedPreferences;
 import com.termux.shared.termux.settings.properties.TermuxPropertyConstants;
 import com.termux.shared.termux.settings.properties.TermuxSharedProperties;
 import com.termux.shared.termux.terminal.io.TerminalExtraKeys;
@@ -75,6 +79,14 @@ public class TermuxTerminalExtraKeys extends TerminalExtraKeys {
                 mExtraKeysInfo = null;
             }
         }
+    }
+
+    @Override
+    public boolean performExtraKeyButtonHapticFeedback(View view, ExtraKeyButton buttonInfo, MaterialButton button) {
+        // If haptic feedback is disabled for the extra keys, report that it was handled and do nothing,
+        // otherwise let ExtraKeysView give feedback as the system settings say.
+        TermuxAppSharedPreferences preferences = mActivity.getPreferences();
+        return preferences != null && !preferences.isExtraKeysHapticFeedbackEnabled();
     }
 
     public ExtraKeysInfo getExtraKeysInfo() {

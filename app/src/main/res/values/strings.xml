@@ -93,6 +93,26 @@
     <string name="title_confirm_kill_process">Really kill this session?</string>
 
     <string name="action_style_terminal">Style</string>
+    <string name="action_edit_extra_keys">Edit extra keys</string>
+    <string name="extra_keys_editor_title">Extra keys</string>
+    <string name="extra_keys_editor_summary">Change the keys, their height and feedback</string>
+    <string name="extra_keys_editor_hint">Tap a key to change, move or remove it. Keys marked with * have a popup or macro, they can be moved and removed, but have to be edited in termux.properties.</string>
+    <string name="extra_keys_editor_add_row">Add row</string>
+    <string name="extra_keys_editor_remove_row">Remove row</string>
+    <string name="extra_keys_editor_add_key">Add key</string>
+    <string name="extra_keys_editor_edit_key">Edit key</string>
+    <string name="extra_keys_editor_key_hint">Key, like ESC or a character</string>
+    <string name="extra_keys_editor_complex_key">This key has a popup or macro, edit it in termux.properties.</string>
+    <string name="extra_keys_editor_add">Add</string>
+    <string name="extra_keys_editor_set">Set</string>
+    <string name="extra_keys_editor_remove">Remove</string>
+    <string name="extra_keys_editor_save">Save</string>
+    <string name="extra_keys_editor_reset">Reset</string>
+    <string name="extra_keys_editor_all_caps">Show key text in capitals</string>
+    <string name="extra_keys_editor_haptic">Haptic feedback</string>
+    <string name="extra_keys_editor_height">Height: %d%%</string>
+    <string name="extra_keys_editor_parse_failed">The extra-keys property in termux.properties is not valid, fix it there first.</string>
+    <string name="extra_keys_editor_save_failed">Could not save termux.properties</string>
     <string name="style_title">Terminal style</string>
     <string name="style_color_scheme_title">Color scheme</string>
     <string name="style_color_scheme_default">Termux default</string>

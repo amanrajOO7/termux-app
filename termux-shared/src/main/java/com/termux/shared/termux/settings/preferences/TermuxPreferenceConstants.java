@@ -126,6 +126,14 @@ public final class TermuxPreferenceConstants {
 
 
         /**
+         * Defines the key for whether the extra keys give haptic feedback. The system
+         * touch feedback setting still needs to be enabled for feedback to be given.
+         */
+        public static final String KEY_EXTRA_KEYS_HAPTIC_FEEDBACK = "extra_keys_haptic_feedback";
+        public static final boolean DEFAULT_VALUE_EXTRA_KEYS_HAPTIC_FEEDBACK = true;
+
+
+        /**
          * Defines the key for font size of termux terminal view.
          */
         public static final String KEY_FONTSIZE = "fontsize";

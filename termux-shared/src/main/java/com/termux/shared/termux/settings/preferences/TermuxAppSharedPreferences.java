@@ -122,6 +122,16 @@ public class TermuxAppSharedPreferences extends AppSharedPreferences {
 
 
 
+    public boolean isExtraKeysHapticFeedbackEnabled() {
+        return SharedPreferenceUtils.getBoolean(mSharedPreferences, TERMUX_APP.KEY_EXTRA_KEYS_HAPTIC_FEEDBACK, TERMUX_APP.DEFAULT_VALUE_EXTRA_KEYS_HAPTIC_FEEDBACK);
+    }
+
+    public void setExtraKeysHapticFeedbackEnabled(boolean value) {
+        SharedPreferenceUtils.setBoolean(mSharedPreferences, TERMUX_APP.KEY_EXTRA_KEYS_HAPTIC_FEEDBACK, value, false);
+    }
+
+
+
     public static int[] getDefaultFontSizes(Context context) {
         float dipInPixels = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 1, context.getResources().getDisplayMetrics());
 

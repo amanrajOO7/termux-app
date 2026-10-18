@@ -12,6 +12,7 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
 
 import com.termux.R;
+import com.termux.app.extrakeys.ExtraKeysEditor;
 import com.termux.app.style.StylePicker;
 import com.termux.shared.termux.settings.preferences.TermuxAppSharedPreferences;
 
@@ -39,6 +40,14 @@ public class TermuxPreferencesFragment extends PreferenceFragmentCompat {
         preferenceManager.setPreferenceDataStore(TermuxPreferencesDataStore.getInstance(context));
 
         setPreferencesFromResource(R.xml.termux_preferences, rootKey);
+
+        Preference extraKeys = findPreference("extra_keys_editor");
+        if (extraKeys != null) {
+            extraKeys.setOnPreferenceClickListener(preference -> {
+                ExtraKeysEditor.show(requireContext());
+                return true;
+            });
+        }
 
         Preference colorScheme = findPreference("style_color_scheme");
         if (colorScheme != null) {
