@@ -7,12 +7,12 @@
 
     <!--
       BaseActivity Light DarkActionBar theme.
-      Material 3 has no DarkActionBar variant, the app bar uses the surface color instead.
+      Material 3 has no DarkActionBar variant, the app bar uses the surface color instead. The Expressive themes require Material Components 1.14.0 or higher.
       The colors are the Material 3 baseline colors, on Android 12+ they are replaced by the
       dynamic colors of the user wallpaper at runtime, see DynamicColors in TermuxApplication.
-      https://github.com/material-components/material-components-android/blob/1.9.0/lib/java/com/google/android/material/theme/res/values/themes.xml
+      https://github.com/material-components/material-components-android/blob/1.14.0/lib/java/com/google/android/material/theme/res/values/themes.xml
      -->
-    <style name="Theme.BaseActivity.Light.DarkActionBar" parent="Theme.Material3.Light">
+    <style name="Theme.BaseActivity.Light.DarkActionBar" parent="Theme.Material3Expressive.Light">
         <!-- Text color. -->
         <item name="android:textColorLink">@color/blue_link_light</item>
 
@@ -57,7 +57,7 @@
 
     <!--
       BaseDialog Light theme.
-      https://github.com/material-components/material-components-android/blob/1.9.0/lib/java/com/google/android/material/dialog/res/values/themes.xml
+      https://github.com/material-components/material-components-android/blob/1.14.0/lib/java/com/google/android/material/dialog/res/values/themes.xml
      -->
     <style name="ThemeOverlay.BaseDialog.Light" parent="ThemeOverlay.Material3.MaterialAlertDialog"/>
 

@@ -5,10 +5,10 @@
 
     <!--
      BaseActivity DayNight DarkActionBar theme.
-     Material 3 has no DarkActionBar variant, the app bar uses the surface color instead.
-     https://github.com/material-components/material-components-android/blob/1.9.0/lib/java/com/google/android/material/theme/res/values/themes.xml
+     Material 3 has no DarkActionBar variant, the app bar uses the surface color instead. The Expressive themes require Material Components 1.14.0 or higher.
+     https://github.com/material-components/material-components-android/blob/1.14.0/lib/java/com/google/android/material/theme/res/values/themes.xml
     -->
-    <style name="Theme.BaseActivity.DayNight.DarkActionBar" parent="Theme.Material3.Dark">
+    <style name="Theme.BaseActivity.DayNight.DarkActionBar" parent="Theme.Material3Expressive.Dark">
         <!-- Text color. -->
         <item name="android:textColorLink">@color/blue_link_dark</item>
 
@@ -29,7 +29,7 @@
 
     <!--
       BaseDialog DayNight theme.
-      https://github.com/material-components/material-components-android/blob/1.9.0/lib/java/com/google/android/material/dialog/res/values/themes.xml
+      https://github.com/material-components/material-components-android/blob/1.14.0/lib/java/com/google/android/material/dialog/res/values/themes.xml
      -->
     <style name="ThemeOverlay.BaseDialog.DayNight" parent="ThemeOverlay.Material3.MaterialAlertDialog"/>
 
