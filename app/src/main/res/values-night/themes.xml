@@ -32,11 +32,11 @@
         <item name="termuxSessionItemBackground">@drawable/session_background_selected</item>
         <item name="termuxSessionItemTitleColor">?attr/colorOnSurface</item>
         <item name="termuxSessionItemSubtitleColor">?attr/colorOnSurfaceVariant</item>
-        <!-- Extra keys colors. -->
-        <item name="extraKeysButtonTextColor">@color/white</item>
-        <item name="extraKeysButtonActiveTextColor">@color/red_400</item>
-        <item name="extraKeysButtonBackgroundColor">@color/black</item>
-        <item name="extraKeysButtonActiveBackgroundColor">@color/grey_500</item>
+        <!-- Extra keys colors, follow the theme colors (dynamic color on Android 12+). -->
+        <item name="extraKeysButtonTextColor">?attr/colorOnSurface</item>
+        <item name="extraKeysButtonActiveTextColor">?attr/colorOnSecondaryContainer</item>
+        <item name="extraKeysButtonBackgroundColor">?attr/colorSurface</item>
+        <item name="extraKeysButtonActiveBackgroundColor">?attr/colorSecondaryContainer</item>
     </style>
 
 </resources>
