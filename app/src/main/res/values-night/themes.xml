@@ -34,9 +34,9 @@
         <item name="termuxSessionItemSubtitleColor">?attr/colorOnSurfaceVariant</item>
         <!-- Extra keys colors, follow the theme colors (dynamic color on Android 12+). -->
         <item name="extraKeysButtonTextColor">?attr/colorOnSurface</item>
-        <item name="extraKeysButtonActiveTextColor">?attr/colorOnSecondaryContainer</item>
+        <item name="extraKeysButtonActiveTextColor">?attr/colorOnPrimaryContainer</item>
         <item name="extraKeysButtonBackgroundColor">?attr/colorSurface</item>
-        <item name="extraKeysButtonActiveBackgroundColor">?attr/colorSecondaryContainer</item>
+        <item name="extraKeysButtonActiveBackgroundColor">?attr/colorPrimaryContainer</item>
     </style>
 
 </resources>
