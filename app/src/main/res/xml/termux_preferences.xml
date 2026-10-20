@@ -18,6 +18,13 @@
         app:summary="@string/termux_terminal_view_preferences_summary"
         app:fragment="com.termux.app.fragments.settings.termux.TerminalViewPreferencesFragment"/>
 
+    <SwitchPreferenceCompat
+        app:key="show_session_tabs"
+        app:icon="@drawable/ic_preference_terminal"
+        app:title="@string/termux_show_session_tabs_title"
+        app:summaryOff="@string/termux_show_session_tabs_summary_off"
+        app:summaryOn="@string/termux_show_session_tabs_summary_on" />
+
     <Preference
         app:key="extra_keys_editor"
         app:icon="@drawable/ic_preference_keyboard"

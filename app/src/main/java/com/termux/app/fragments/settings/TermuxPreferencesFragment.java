@@ -80,6 +80,19 @@ class TermuxPreferencesDataStore extends PreferenceDataStore {
         mPreferences = TermuxAppSharedPreferences.build(context, true);
     }
 
+    @Override
+    public void putBoolean(String key, boolean value) {
+        if (mPreferences == null || key == null) return;
+        if ("show_session_tabs".equals(key)) mPreferences.setShowSessionTabs(value);
+    }
+
+    @Override
+    public boolean getBoolean(String key, boolean defValue) {
+        if (mPreferences == null || key == null) return defValue;
+        if ("show_session_tabs".equals(key)) return mPreferences.shouldShowSessionTabs();
+        return defValue;
+    }
+
     public static synchronized TermuxPreferencesDataStore getInstance(Context context) {
         if (mInstance == null) {
             mInstance = new TermuxPreferencesDataStore(context);

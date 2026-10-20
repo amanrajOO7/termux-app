@@ -39,6 +39,7 @@ import com.termux.R;
 import com.termux.app.api.file.FileReceiverActivity;
 import com.termux.app.terminal.ContextActionSheet;
 import com.termux.app.terminal.TermuxActivityRootView;
+import com.termux.app.terminal.TerminalTabsController;
 import com.termux.app.terminal.TermuxTerminalSessionActivityClient;
 import com.termux.app.terminal.io.TermuxTerminalExtraKeys;
 import com.termux.shared.activities.ReportActivity;
@@ -113,6 +114,9 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
      *  {@link TerminalSession} and {@link TermuxActivity}.
      */
     TermuxTerminalSessionActivityClient mTermuxTerminalSessionActivityClient;
+
+    /** Shows the open terminal sessions as tabs. */
+    private TerminalTabsController mTerminalTabsController;
 
     /** Picks a font file for {@link StylePicker}. */
     private ActivityResultLauncher<String[]> mFontFileLauncher;
@@ -249,6 +253,9 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
 
         setTermuxTerminalViewAndClients();
 
+        mTerminalTabsController = new TerminalTabsController(this,
+            findViewById(R.id.terminal_tabs_bar), findViewById(R.id.terminal_tabs), findViewById(R.id.terminal_tabs_new));
+
         setTerminalToolbarView(savedInstanceState);
 
         setSettingsButtonView();
@@ -317,6 +324,9 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
 
         if (mTermuxTerminalSessionActivityClient != null)
             mTermuxTerminalSessionActivityClient.onResume();
+
+        // The show session tabs preference may have changed in the settings.
+        updateTerminalTabs();
 
         if (mTermuxTerminalViewClient != null)
             mTermuxTerminalViewClient.onResume();
@@ -881,6 +891,12 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
 
     public void termuxSessionListNotifyUpdated() {
         mTermuxSessionListViewController.notifyDataSetChanged();
+        updateTerminalTabs();
+    }
+
+    /** Update the tab bar of the open terminal sessions, see {@link TerminalTabsController}. */
+    public void updateTerminalTabs() {
+        if (mTerminalTabsController != null) mTerminalTabsController.update();
     }
 
     public boolean isVisible() {

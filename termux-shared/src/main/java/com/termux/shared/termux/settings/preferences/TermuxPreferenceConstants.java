@@ -133,6 +133,11 @@ public final class TermuxPreferenceConstants {
         public static final boolean DEFAULT_VALUE_EXTRA_KEYS_HAPTIC_FEEDBACK = true;
 
 
+        /** Defines the key for whether to show a tab bar with the open terminal sessions. */
+        public static final String KEY_SHOW_SESSION_TABS = "show_session_tabs";
+        public static final boolean DEFAULT_VALUE_SHOW_SESSION_TABS = true;
+
+
         /**
          * Defines the key for font size of termux terminal view.
          */

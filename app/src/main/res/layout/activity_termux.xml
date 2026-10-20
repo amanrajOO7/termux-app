@@ -16,10 +16,45 @@
         android:layout_marginVertical="0dp"
         android:orientation="vertical">
 
+        <!-- Tab bar with the open terminal sessions, see TerminalTabsController. -->
+        <LinearLayout
+            android:id="@+id/terminal_tabs_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:background="?attr/colorSurface"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/terminal_tabs"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:tabMode="scrollable"
+                app:tabGravity="start"
+                app:tabIndicatorColor="?attr/colorPrimary"
+                app:tabTextColor="?attr/colorOnSurfaceVariant"
+                app:tabSelectedTextColor="?attr/colorOnSurface"
+                app:tabIndicatorHeight="3dp"
+                app:tabPaddingStart="12dp"
+                app:tabPaddingEnd="12dp" />
+
+            <ImageButton
+                android:id="@+id/terminal_tabs_new"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@null"
+                android:contentDescription="@string/action_new_session"
+                android:src="@drawable/ic_drawer_new_session"
+                app:tint="?attr/termuxActivityDrawerImageTint" />
+        </LinearLayout>
+
         <androidx.drawerlayout.widget.DrawerLayout
             android:id="@+id/drawer_layout"
             android:layout_width="match_parent"
-            android:layout_alignParentTop="true"
+            android:layout_below="@+id/terminal_tabs_bar"
             android:layout_above="@+id/terminal_toolbar_view_pager"
             android:layout_height="match_parent">
 

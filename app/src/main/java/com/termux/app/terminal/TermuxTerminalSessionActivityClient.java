@@ -298,6 +298,8 @@ public class TermuxTerminalSessionActivityClient extends TermuxTerminalSessionCl
             notifyOfSessionChange();
         }
 
+        mActivity.updateTerminalTabs();
+
         // We call the following even when the session is already being displayed since config may
         // be stale, like current session not selected or scrolled to.
         checkAndScrollToSession(session);

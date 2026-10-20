@@ -132,6 +132,16 @@ public class TermuxAppSharedPreferences extends AppSharedPreferences {
 
 
 
+    public boolean shouldShowSessionTabs() {
+        return SharedPreferenceUtils.getBoolean(mSharedPreferences, TERMUX_APP.KEY_SHOW_SESSION_TABS, TERMUX_APP.DEFAULT_VALUE_SHOW_SESSION_TABS);
+    }
+
+    public void setShowSessionTabs(boolean value) {
+        SharedPreferenceUtils.setBoolean(mSharedPreferences, TERMUX_APP.KEY_SHOW_SESSION_TABS, value, false);
+    }
+
+
+
     public static int[] getDefaultFontSizes(Context context) {
         float dipInPixels = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 1, context.getResources().getDisplayMetrics());
 
