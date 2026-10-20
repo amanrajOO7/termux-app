@@ -36,7 +36,7 @@
 
         <!-- Left drawer, follows the theme colors (dynamic color on Android 12+). -->
         <item name="buttonBarButtonStyle">@style/TermuxActivity.Drawer.ButtonBarStyle</item>
-        <item name="termuxActivityDrawerBackground">?attr/colorSurface</item>
+        <item name="termuxActivityDrawerBackground">?attr/colorSurfaceContainerLow</item>
         <item name="termuxActivityDrawerImageTint">?attr/colorOnSurface</item>
         <item name="termuxSessionItemBackground">@drawable/session_background_selected</item>
         <item name="termuxSessionItemTitleColor">?attr/colorOnSurface</item>
@@ -44,7 +44,7 @@
         <!-- Extra keys colors, follow the theme colors (dynamic color on Android 12+). -->
         <item name="extraKeysButtonTextColor">?attr/colorOnSurface</item>
         <item name="extraKeysButtonActiveTextColor">?attr/colorOnPrimaryContainer</item>
-        <item name="extraKeysButtonBackgroundColor">?attr/colorSurface</item>
+        <item name="extraKeysButtonBackgroundColor">?attr/colorSurfaceContainerHigh</item>
         <item name="extraKeysButtonActiveBackgroundColor">?attr/colorPrimaryContainer</item>
     </style>
 
