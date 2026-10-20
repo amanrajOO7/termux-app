@@ -131,7 +131,7 @@ public class TerminalTabsController {
         LinearLayout tab = new LinearLayout(context);
         tab.setOrientation(LinearLayout.HORIZONTAL);
         tab.setGravity(android.view.Gravity.CENTER_VERTICAL);
-        tab.setPadding(dp(14), 0, dp(2), 0);
+        tab.setPadding(dp(14), 0, dp(4), 0);
         tab.setBackground(new RippleDrawable(ColorStateList.valueOf(highlight), shape, null));
 
         LinearLayout.LayoutParams tabParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, dp(36));
@@ -150,10 +150,11 @@ public class TerminalTabsController {
         close.setImageResource(R.drawable.ic_tab_close);
         close.setBackground(null);
         close.setContentDescription(context.getString(R.string.action_close_tab));
-        close.setPadding(dp(4), dp(4), dp(4), dp(4));
+        // The icon is drawn at 14dp, about the height of the label, so it does not look bigger than the text.
+        close.setPadding(dp(5), dp(5), dp(5), dp(5));
         ImageViewCompat.setImageTintList(close, ColorStateList.valueOf(foreground));
         close.setOnClickListener(v -> closeTab(session));
-        tab.addView(close, new LinearLayout.LayoutParams(dp(28), dp(28)));
+        tab.addView(close, new LinearLayout.LayoutParams(dp(24), dp(24)));
 
         tab.setOnClickListener(v -> {
             if (session != mActivity.getCurrentSession()) {
@@ -174,7 +175,8 @@ public class TerminalTabsController {
         add.setImageResource(R.drawable.ic_tab_add);
         add.setBackground(null);
         add.setContentDescription(context.getString(R.string.action_new_session));
-        add.setPadding(dp(6), dp(6), dp(6), dp(6));
+        // The icon is drawn at 18dp, the same thin stroke as the close icons.
+        add.setPadding(dp(9), dp(9), dp(9), dp(9));
         ImageViewCompat.setImageTintList(add, ColorStateList.valueOf(
             color(context, com.google.android.material.R.attr.colorOnSurface, Color.BLACK)));
         add.setOnClickListener(v -> mActivity.getTermuxTerminalSessionClient().addNewSession(false, null));
