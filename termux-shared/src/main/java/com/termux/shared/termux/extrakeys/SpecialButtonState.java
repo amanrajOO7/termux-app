@@ -40,6 +40,8 @@ public class SpecialButtonState {
         isActive = value;
         for (MaterialButton button : buttons) {
             button.setTextColor(value ? mExtraKeysView.getButtonActiveTextColor() : mExtraKeysView.getButtonTextColor());
+            // Keep the filled look while the key is active, not only while it is pressed.
+            button.setBackgroundColor(value ? mExtraKeysView.getButtonActiveBackgroundColor() : mExtraKeysView.getButtonBackgroundColor());
         }
     }
 

@@ -432,7 +432,7 @@ public final class ExtraKeysView extends GridLayout {
                                 // Show popup on swipe up
                                 if (mPopupWindow == null && event.getY() < 0) {
                                     stopScheduledExecutors();
-                                    view.setBackgroundColor(mButtonBackgroundColor);
+                                    view.setBackgroundColor(getRestingBackgroundColor(buttonInfo));
                                     showPopup(view, buttonInfo.getPopup());
                                 }
                                 if (mPopupWindow != null && event.getY() > 0) {
@@ -443,12 +443,12 @@ public final class ExtraKeysView extends GridLayout {
                             return true;
 
                         case MotionEvent.ACTION_CANCEL:
-                            view.setBackgroundColor(mButtonBackgroundColor);
+                            view.setBackgroundColor(getRestingBackgroundColor(buttonInfo));
                             stopScheduledExecutors();
                             return true;
 
                         case MotionEvent.ACTION_UP:
-                            view.setBackgroundColor(mButtonBackgroundColor);
+                            view.setBackgroundColor(getRestingBackgroundColor(buttonInfo));
                             stopScheduledExecutors();
                             // If ACTION_UP up was not from a repetitive key or was with a key with a popup button
                             if (mLongPressCount == 0 || mPopupWindow != null) {
@@ -624,6 +624,18 @@ public final class ExtraKeysView extends GridLayout {
 
 
 
+    /**
+     * The background a key has when it is not pressed. A {@link SpecialButton} that is active, like
+     * CTRL or ALT after it was tapped, keeps the active background.
+     */
+    int getRestingBackgroundColor(@NonNull ExtraKeyButton buttonInfo) {
+        if (isSpecialButton(buttonInfo)) {
+            SpecialButtonState state = mSpecialButtons.get(SpecialButton.valueOf(buttonInfo.getKey()));
+            if (state != null && state.isActive) return mButtonActiveBackgroundColor;
+        }
+        return mButtonBackgroundColor;
+    }
+
     /** Check whether a {@link ExtraKeyButton} is a {@link SpecialButton}. */
     public boolean isSpecialButton(ExtraKeyButton button) {
         return mSpecialButtonsKeys.contains(button.getKey());
@@ -660,6 +672,7 @@ public final class ExtraKeysView extends GridLayout {
         state.setIsCreated(true);
         MaterialButton button = new MaterialButton(getContext(), null, android.R.attr.buttonBarButtonStyle);
         button.setTextColor(state.isActive ? mButtonActiveTextColor : mButtonTextColor);
+        button.setBackgroundColor(state.isActive ? mButtonActiveBackgroundColor : mButtonBackgroundColor);
         if (needUpdate) {
             state.buttons.add(button);
         }
