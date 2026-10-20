@@ -115,12 +115,12 @@ public class TerminalTabsController {
     private View createTab(TerminalSession session, String title, boolean selected) {
         Context context = mActivity;
 
-        int background = color(context, selected
-            ? com.google.android.material.R.attr.colorPrimaryContainer
-            : com.google.android.material.R.attr.colorTertiaryContainer, Color.LTGRAY);
-        int foreground = color(context, selected
-            ? com.google.android.material.R.attr.colorOnPrimaryContainer
-            : com.google.android.material.R.attr.colorOnTertiaryContainer, Color.BLACK);
+        int background = selected
+            ? color(context, com.google.android.material.R.attr.colorPrimaryContainer, Color.LTGRAY)
+            : inactiveColor(context);
+        int foreground = selected
+            ? color(context, com.google.android.material.R.attr.colorOnPrimaryContainer, Color.BLACK)
+            : color(context, com.google.android.material.R.attr.colorOnSurface, Color.BLACK);
 
         GradientDrawable shape = new GradientDrawable();
         shape.setColor(background);
@@ -147,6 +147,9 @@ public class TerminalTabsController {
         label.setTextColor(foreground);
         label.setMaxLines(1);
         label.setTypeface(selected ? Typeface.DEFAULT_BOLD : Typeface.DEFAULT);
+        // Remove the extra font padding above and below the text, so the glyphs are centred
+        // in the tab and line up with the close icon.
+        label.setIncludeFontPadding(false);
         tab.addView(label);
 
         ImageButton close = new ImageButton(context);
@@ -183,14 +186,14 @@ public class TerminalTabsController {
         // A round neutral pill, the same height as the tabs, so it reads as a button but not as a tab.
         GradientDrawable pill = new GradientDrawable();
         pill.setShape(GradientDrawable.OVAL);
-        pill.setColor(color(context, com.google.android.material.R.attr.colorSurfaceVariant, Color.DKGRAY));
+        pill.setColor(inactiveColor(context));
         add.setBackground(new RippleDrawable(ColorStateList.valueOf(
-            ColorUtils.setAlphaComponent(color(context, com.google.android.material.R.attr.colorOnSurfaceVariant, Color.LTGRAY), 0x33)),
+            ColorUtils.setAlphaComponent(color(context, com.google.android.material.R.attr.colorOnSurface, Color.LTGRAY), 0x33)),
             pill, null));
         // Same visible size as the close icon: a 14dp icon in the 36dp button.
         add.setPadding(dp(11), dp(11), dp(11), dp(11));
         ImageViewCompat.setImageTintList(add, ColorStateList.valueOf(
-            color(context, com.google.android.material.R.attr.colorOnSurfaceVariant, Color.BLACK)));
+            color(context, com.google.android.material.R.attr.colorOnSurface, Color.BLACK)));
         add.setOnClickListener(v -> mActivity.getTermuxTerminalSessionClient().addNewSession(false, null));
         add.setLayoutParams(new LinearLayout.LayoutParams(dp(36), dp(36)));
         return add;
@@ -224,6 +227,16 @@ public class TerminalTabsController {
             title = title.substring(0, MAX_TITLE_LENGTH - 1) + "…";
         }
         return title;
+    }
+
+    /**
+     * The color of the inactive tabs and the add button: a light tint of the primary color, the same
+     * hue as the selected tab, blended over the bar so it works in day and night mode.
+     */
+    private int inactiveColor(Context context) {
+        int surface = color(context, com.google.android.material.R.attr.colorSurface, Color.DKGRAY);
+        int primary = color(context, com.google.android.material.R.attr.colorPrimary, Color.LTGRAY);
+        return ColorUtils.blendARGB(surface, primary, 0.2f);
     }
 
     private int color(Context context, int attr, int fallback) {
