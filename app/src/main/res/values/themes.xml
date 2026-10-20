@@ -17,15 +17,17 @@
 
     <!-- TermuxActivity DayNight NoActionBar theme. -->
     <style name="Theme.TermuxActivity.DayNight.NoActionBar" parent="Theme.TermuxApp.DayNight.NoActionBar">
-        <item name="android:windowBackground">@color/black</item>
+        <!-- Behind the status bar, navigation bar and keyboard: the same color as the bars, so the
+             app looks edge to edge. The terminal view paints its own black background. -->
+        <item name="android:windowBackground">?attr/colorSurfaceContainer</item>
 
         <!-- Avoid action mode toolbar pushing down terminal content when
              selecting text on pre-6.0 (non-floating toolbar). -->
         <item name="android:windowActionModeOverlay">true</item>
 
-        <!-- The terminal is always black, so system bar icons must always be light, even in day mode. -->
-        <item name="android:windowLightStatusBar">false</item>
-        <item name="android:windowLightNavigationBar">false</item>
+        <!-- System bar icons follow the bar color: dark on the light theme, light on the dark one. -->
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">true</item>
 
         <item name="android:windowTranslucentStatus">true</item>
         <item name="android:windowTranslucentNavigation">true</item>
@@ -44,7 +46,7 @@
         <!-- Extra keys colors, follow the theme colors (dynamic color on Android 12+). -->
         <item name="extraKeysButtonTextColor">?attr/colorOnSurface</item>
         <item name="extraKeysButtonActiveTextColor">?attr/colorOnPrimaryContainer</item>
-        <item name="extraKeysButtonBackgroundColor">?attr/colorSurfaceContainerHigh</item>
+        <item name="extraKeysButtonBackgroundColor">@android:color/transparent</item>
         <item name="extraKeysButtonActiveBackgroundColor">?attr/colorPrimaryContainer</item>
     </style>
 
