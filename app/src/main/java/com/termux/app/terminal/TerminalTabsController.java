@@ -1,13 +1,26 @@
 package com.termux.app.terminal;
 
 import android.app.AlertDialog;
+import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.graphics.Typeface;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.RippleDrawable;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.HorizontalScrollView;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.graphics.ColorUtils;
+import androidx.core.widget.ImageViewCompat;
 
-import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.color.MaterialColors;
 import com.termux.R;
 import com.termux.app.TermuxActivity;
 import com.termux.app.TermuxService;
@@ -18,10 +31,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Shows the open terminal sessions as tabs above the terminal. Tapping a tab switches to that
- * session, long pressing it renames or closes it, and the button at the end adds a new session.
+ * Shows the open terminal sessions as a row of tabs above the terminal. The selected tab uses the
+ * primary container color and the others the tertiary container color as an accent. Each tab has
+ * a small x to close it, and a + at the end of the row adds a new session.
  *
- * The tabs follow the sessions of the {@link TermuxService}, so they are updated from
+ * Tapping a tab switches to its session and long pressing it renames the session.
+ *
+ * The tabs follow the sessions of the {@link TermuxService}, so they are rebuilt from
  * {@link TermuxActivity#updateTerminalTabs()} whenever the sessions, their titles or the current
  * session change.
  */
@@ -31,42 +47,25 @@ public class TerminalTabsController {
 
     private final TermuxActivity mActivity;
     private final View mBar;
-    private final TabLayout mTabLayout;
+    private final HorizontalScrollView mScroll;
+    private final LinearLayout mStrip;
+    private final float mDensity;
 
-    /** The sessions and titles the tabs were last built with, so they are only rebuilt when needed. */
+    /** What the tabs were last built with, so they are only rebuilt when something changed. */
     private final List<TerminalSession> mShownSessions = new ArrayList<>();
     private final List<String> mShownTitles = new ArrayList<>();
-
-    /** Set while the tabs are changed by code, so that the selection listener does not switch sessions. */
-    private boolean mUpdating;
+    private int mShownSelected = -1;
 
     public TerminalTabsController(@NonNull TermuxActivity activity, @NonNull View bar,
-                                  @NonNull TabLayout tabLayout, @NonNull View newSessionButton) {
+                                  @NonNull HorizontalScrollView scroll, @NonNull LinearLayout strip) {
         mActivity = activity;
         mBar = bar;
-        mTabLayout = tabLayout;
-
-        mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                if (mUpdating) return;
-                TerminalSession session = sessionAt(tab.getPosition());
-                if (session != null) {
-                    mActivity.getTermuxTerminalSessionClient().setCurrentSession(session);
-                }
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {}
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {}
-        });
-
-        newSessionButton.setOnClickListener(v -> mActivity.getTermuxTerminalSessionClient().addNewSession(false, null));
+        mScroll = scroll;
+        mStrip = strip;
+        mDensity = activity.getResources().getDisplayMetrics().density;
     }
 
-    /** Make the tabs match the sessions of the service and select the current session. */
+    /** Make the tabs match the sessions of the service and the current session. */
     public void update() {
         TermuxService service = mActivity.getTermuxService();
         boolean show = service != null && mActivity.getPreferences().shouldShowSessionTabs();
@@ -78,54 +77,121 @@ public class TerminalTabsController {
         for (int i = 0; i < service.getTermuxSessionsSize(); i++) {
             TermuxSession termuxSession = service.getTermuxSession(i);
             if (termuxSession == null) continue;
-            sessions.add(termuxSession.getTerminalSession());
-            titles.add(titleOf(termuxSession.getTerminalSession(), sessions.size()));
+            TerminalSession session = termuxSession.getTerminalSession();
+            sessions.add(session);
+            titles.add(titleOf(session, sessions.size()));
         }
+        int selected = sessions.indexOf(mActivity.getCurrentSession());
 
-        mUpdating = true;
-        try {
-            if (!sessions.equals(mShownSessions) || !titles.equals(mShownTitles)) {
-                rebuild(sessions, titles);
-            }
-
-            int selected = sessions.indexOf(mActivity.getCurrentSession());
-            if (selected >= 0 && mTabLayout.getSelectedTabPosition() != selected) {
-                TabLayout.Tab tab = mTabLayout.getTabAt(selected);
-                if (tab != null) tab.select();
-            }
-        } finally {
-            mUpdating = false;
+        if (!sessions.equals(mShownSessions) || !titles.equals(mShownTitles) || selected != mShownSelected) {
+            rebuild(sessions, titles, selected);
         }
     }
 
-    private void rebuild(List<TerminalSession> sessions, List<String> titles) {
-        mTabLayout.removeAllTabs();
-        for (String title : titles) {
-            mTabLayout.addTab(mTabLayout.newTab().setText(title), false);
+    private void rebuild(List<TerminalSession> sessions, List<String> titles, int selected) {
+        mStrip.removeAllViews();
+
+        View selectedView = null;
+        for (int i = 0; i < sessions.size(); i++) {
+            View tab = createTab(sessions.get(i), titles.get(i), i == selected);
+            if (i == selected) selectedView = tab;
+            mStrip.addView(tab);
         }
+        mStrip.addView(createAddButton());
 
         mShownSessions.clear();
         mShownSessions.addAll(sessions);
         mShownTitles.clear();
         mShownTitles.addAll(titles);
+        mShownSelected = selected;
 
-        // The tab views are created by the layout, so the long press listener is set on them after the rebuild.
-        ViewGroup strip = (ViewGroup) mTabLayout.getChildAt(0);
-        for (int i = 0; i < strip.getChildCount(); i++) {
-            final int index = i;
-            strip.getChildAt(i).setOnLongClickListener(v -> {
-                showTabMenu(index);
-                return true;
-            });
+        // Keep the selected tab in view when there are more tabs than fit on screen.
+        if (selectedView != null) {
+            final View toShow = selectedView;
+            mScroll.post(() -> mScroll.smoothScrollTo(Math.max(0, toShow.getLeft() - dp(24)), 0));
         }
     }
 
-    @Nullable
-    private TerminalSession sessionAt(int index) {
-        TermuxService service = mActivity.getTermuxService();
-        if (service == null) return null;
-        TermuxSession termuxSession = service.getTermuxSession(index);
-        return termuxSession == null ? null : termuxSession.getTerminalSession();
+    private View createTab(TerminalSession session, String title, boolean selected) {
+        Context context = mActivity;
+
+        int background = color(context, selected
+            ? com.google.android.material.R.attr.colorPrimaryContainer
+            : com.google.android.material.R.attr.colorTertiaryContainer, Color.LTGRAY);
+        int foreground = color(context, selected
+            ? com.google.android.material.R.attr.colorOnPrimaryContainer
+            : com.google.android.material.R.attr.colorOnTertiaryContainer, Color.BLACK);
+
+        GradientDrawable shape = new GradientDrawable();
+        shape.setColor(background);
+        shape.setCornerRadius(dp(18));
+        // A ripple in the text color, so the tap is visible on the colored pill.
+        int highlight = ColorUtils.setAlphaComponent(foreground, 0x33);
+
+        LinearLayout tab = new LinearLayout(context);
+        tab.setOrientation(LinearLayout.HORIZONTAL);
+        tab.setGravity(android.view.Gravity.CENTER_VERTICAL);
+        tab.setPadding(dp(14), 0, dp(2), 0);
+        tab.setBackground(new RippleDrawable(ColorStateList.valueOf(highlight), shape, null));
+
+        LinearLayout.LayoutParams tabParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, dp(36));
+        tabParams.setMarginEnd(dp(6));
+        tab.setLayoutParams(tabParams);
+
+        TextView label = new TextView(context);
+        label.setText(title);
+        label.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+        label.setTextColor(foreground);
+        label.setMaxLines(1);
+        label.setTypeface(selected ? Typeface.DEFAULT_BOLD : Typeface.DEFAULT);
+        tab.addView(label);
+
+        ImageButton close = new ImageButton(context);
+        close.setImageResource(R.drawable.ic_tab_close);
+        close.setBackground(null);
+        close.setContentDescription(context.getString(R.string.action_close_tab));
+        close.setPadding(dp(4), dp(4), dp(4), dp(4));
+        ImageViewCompat.setImageTintList(close, ColorStateList.valueOf(foreground));
+        close.setOnClickListener(v -> closeTab(session));
+        tab.addView(close, new LinearLayout.LayoutParams(dp(28), dp(28)));
+
+        tab.setOnClickListener(v -> {
+            if (session != mActivity.getCurrentSession()) {
+                mActivity.getTermuxTerminalSessionClient().setCurrentSession(session);
+            }
+        });
+        tab.setOnLongClickListener(v -> {
+            mActivity.getTermuxTerminalSessionClient().renameSession(session);
+            return true;
+        });
+
+        return tab;
+    }
+
+    private View createAddButton() {
+        Context context = mActivity;
+        ImageButton add = new ImageButton(context);
+        add.setImageResource(R.drawable.ic_tab_add);
+        add.setBackground(null);
+        add.setContentDescription(context.getString(R.string.action_new_session));
+        add.setPadding(dp(6), dp(6), dp(6), dp(6));
+        ImageViewCompat.setImageTintList(add, ColorStateList.valueOf(
+            color(context, com.google.android.material.R.attr.colorOnSurface, Color.BLACK)));
+        add.setOnClickListener(v -> mActivity.getTermuxTerminalSessionClient().addNewSession(false, null));
+        add.setLayoutParams(new LinearLayout.LayoutParams(dp(36), dp(36)));
+        return add;
+    }
+
+    private void closeTab(TerminalSession session) {
+        if (session.isRunning()) {
+            new AlertDialog.Builder(mActivity)
+                .setMessage(R.string.title_confirm_kill_process)
+                .setPositiveButton(android.R.string.yes, (dialog, which) -> session.finishIfRunning())
+                .setNegativeButton(android.R.string.no, null)
+                .show();
+        } else {
+            mActivity.getTermuxTerminalSessionClient().removeFinishedSession(session);
+        }
     }
 
     /** The name of the session, else its title from the shell, else a numbered default. */
@@ -146,26 +212,12 @@ public class TerminalTabsController {
         return title;
     }
 
-    private void showTabMenu(int index) {
-        final TerminalSession session = sessionAt(index);
-        if (session == null) return;
-
-        new ContextActionSheet(mActivity)
-            .addRow(R.string.action_rename_tab, true, () -> mActivity.getTermuxTerminalSessionClient().renameSession(session))
-            .addRow(R.string.action_close_tab, true, () -> closeTab(session))
-            .show();
+    private int color(Context context, int attr, int fallback) {
+        return MaterialColors.getColor(context, attr, fallback);
     }
 
-    private void closeTab(TerminalSession session) {
-        if (session.isRunning()) {
-            new AlertDialog.Builder(mActivity)
-                .setMessage(R.string.title_confirm_kill_process)
-                .setPositiveButton(android.R.string.yes, (dialog, which) -> session.finishIfRunning())
-                .setNegativeButton(android.R.string.no, null)
-                .show();
-        } else {
-            mActivity.getTermuxTerminalSessionClient().removeFinishedSession(session);
-        }
+    private int dp(int value) {
+        return Math.round(value * mDensity);
     }
 
 }

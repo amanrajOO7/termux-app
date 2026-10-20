@@ -254,7 +254,7 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
         setTermuxTerminalViewAndClients();
 
         mTerminalTabsController = new TerminalTabsController(this,
-            findViewById(R.id.terminal_tabs_bar), findViewById(R.id.terminal_tabs), findViewById(R.id.terminal_tabs_new));
+            findViewById(R.id.terminal_tabs_bar), findViewById(R.id.terminal_tabs), findViewById(R.id.terminal_tabs_strip));
 
         setTerminalToolbarView(savedInstanceState);
 

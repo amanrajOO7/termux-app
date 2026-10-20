@@ -16,39 +16,31 @@
         android:layout_marginVertical="0dp"
         android:orientation="vertical">
 
-        <!-- Tab bar with the open terminal sessions, see TerminalTabsController. -->
+        <!-- Tab bar with the open terminal sessions, filled in by TerminalTabsController. -->
         <LinearLayout
             android:id="@+id/terminal_tabs_bar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:background="?attr/colorSurface"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
+            android:orientation="vertical"
+            android:paddingVertical="6dp"
             android:visibility="gone">
 
-            <com.google.android.material.tabs.TabLayout
+            <HorizontalScrollView
                 android:id="@+id/terminal_tabs"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                app:tabMode="scrollable"
-                app:tabGravity="start"
-                app:tabIndicatorColor="?attr/colorPrimary"
-                app:tabTextColor="?attr/colorOnSurfaceVariant"
-                app:tabSelectedTextColor="?attr/colorOnSurface"
-                app:tabIndicatorHeight="3dp"
-                app:tabPaddingStart="12dp"
-                app:tabPaddingEnd="12dp" />
+                android:paddingHorizontal="6dp"
+                android:scrollbars="none">
 
-            <ImageButton
-                android:id="@+id/terminal_tabs_new"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:background="@null"
-                android:contentDescription="@string/action_new_session"
-                android:src="@drawable/ic_drawer_new_session"
-                app:tint="?attr/termuxActivityDrawerImageTint" />
+                <LinearLayout
+                    android:id="@+id/terminal_tabs_strip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal" />
+            </HorizontalScrollView>
         </LinearLayout>
 
         <androidx.drawerlayout.widget.DrawerLayout
