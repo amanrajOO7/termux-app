@@ -6,7 +6,7 @@
     <!-- Thin plus icon, same size and stroke as the close icon, tinted in code. -->
     <path
         android:strokeColor="@android:color/white"
-        android:strokeWidth="2"
+        android:strokeWidth="2.6"
         android:strokeLineCap="round"
-        android:pathData="M12,3 L12,21 M3,12 L21,12" />
+        android:pathData="M12,4 L12,20 M4,12 L20,12" />
 </vector>

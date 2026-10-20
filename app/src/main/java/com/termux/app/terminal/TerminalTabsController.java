@@ -179,12 +179,18 @@ public class TerminalTabsController {
         Context context = mActivity;
         ImageButton add = new ImageButton(context);
         add.setImageResource(R.drawable.ic_tab_add);
-        add.setBackground(null);
         add.setContentDescription(context.getString(R.string.action_new_session));
+        // A round neutral pill, the same height as the tabs, so it reads as a button but not as a tab.
+        GradientDrawable pill = new GradientDrawable();
+        pill.setShape(GradientDrawable.OVAL);
+        pill.setColor(color(context, com.google.android.material.R.attr.colorSurfaceVariant, Color.DKGRAY));
+        add.setBackground(new RippleDrawable(ColorStateList.valueOf(
+            ColorUtils.setAlphaComponent(color(context, com.google.android.material.R.attr.colorOnSurfaceVariant, Color.LTGRAY), 0x33)),
+            pill, null));
         // Same visible size as the close icon: a 14dp icon in the 36dp button.
         add.setPadding(dp(11), dp(11), dp(11), dp(11));
         ImageViewCompat.setImageTintList(add, ColorStateList.valueOf(
-            color(context, com.google.android.material.R.attr.colorOnSurface, Color.BLACK)));
+            color(context, com.google.android.material.R.attr.colorOnSurfaceVariant, Color.BLACK)));
         add.setOnClickListener(v -> mActivity.getTermuxTerminalSessionClient().addNewSession(false, null));
         add.setLayoutParams(new LinearLayout.LayoutParams(dp(36), dp(36)));
         return add;

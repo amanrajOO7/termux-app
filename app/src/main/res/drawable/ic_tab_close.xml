@@ -6,7 +6,7 @@
     <!-- Thin close (x) icon. The stroke spans most of the viewport so the visible size is predictable, tinted in code. -->
     <path
         android:strokeColor="@android:color/white"
-        android:strokeWidth="2"
+        android:strokeWidth="2.6"
         android:strokeLineCap="round"
-        android:pathData="M3,3 L21,21 M21,3 L3,21" />
+        android:pathData="M4,4 L20,20 M20,4 L4,20" />
 </vector>
