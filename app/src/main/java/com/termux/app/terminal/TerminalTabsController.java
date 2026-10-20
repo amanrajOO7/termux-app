@@ -131,8 +131,10 @@ public class TerminalTabsController {
         LinearLayout tab = new LinearLayout(context);
         tab.setOrientation(LinearLayout.HORIZONTAL);
         tab.setGravity(android.view.Gravity.CENTER_VERTICAL);
-        // Equal visual space on both sides: the close icon has its own inner padding on the right.
-        tab.setPadding(dp(12), 0, dp(2), 0);
+        // 12dp from the edge to the label, and 12dp from the edge to the visible close stroke.
+        // The close button draws a 14dp icon with 5dp padding, and its stroke is about 10.5dp, so
+        // it is inset 6.75dp in its 24dp box, which the 5dp end padding makes up to 12dp.
+        tab.setPadding(dp(12), 0, dp(5), 0);
         tab.setBackground(new RippleDrawable(ColorStateList.valueOf(highlight), shape, null));
 
         LinearLayout.LayoutParams tabParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, dp(36));
@@ -151,13 +153,13 @@ public class TerminalTabsController {
         close.setImageResource(R.drawable.ic_tab_close);
         close.setBackground(null);
         close.setContentDescription(context.getString(R.string.action_close_tab));
-        // The 24dp touch target draws a 12dp icon, about the cap height of the label. The margin
-        // gives the same gap between the label and the icon as the inner padding gives on the right.
-        close.setPadding(dp(6), dp(6), dp(6), dp(6));
+        // 24dp touch target with a 14dp icon: the icon stroke is about the cap height of the label.
+        close.setPadding(dp(5), dp(5), dp(5), dp(5));
         ImageViewCompat.setImageTintList(close, ColorStateList.valueOf(foreground));
         close.setOnClickListener(v -> closeTab(session));
         LinearLayout.LayoutParams closeParams = new LinearLayout.LayoutParams(dp(24), dp(24));
-        closeParams.setMarginStart(dp(2));
+        // About 8dp between the end of the label and the visible close stroke.
+        closeParams.setMarginStart(dp(1));
         tab.addView(close, closeParams);
 
         tab.setOnClickListener(v -> {
@@ -179,8 +181,8 @@ public class TerminalTabsController {
         add.setImageResource(R.drawable.ic_tab_add);
         add.setBackground(null);
         add.setContentDescription(context.getString(R.string.action_new_session));
-        // The icon is drawn at 18dp inside the 36dp button, so it sits centred on the row of tabs.
-        add.setPadding(dp(9), dp(9), dp(9), dp(9));
+        // Same visible size as the close icon: a 14dp icon in the 36dp button.
+        add.setPadding(dp(11), dp(11), dp(11), dp(11));
         ImageViewCompat.setImageTintList(add, ColorStateList.valueOf(
             color(context, com.google.android.material.R.attr.colorOnSurface, Color.BLACK)));
         add.setOnClickListener(v -> mActivity.getTermuxTerminalSessionClient().addNewSession(false, null));
