@@ -140,6 +140,14 @@ public class TermuxAppSharedPreferences extends AppSharedPreferences {
         SharedPreferenceUtils.setBoolean(mSharedPreferences, TERMUX_APP.KEY_SHOW_SESSION_TABS, value, false);
     }
 
+    public boolean shouldTerminalFollowTheme() {
+        return SharedPreferenceUtils.getBoolean(mSharedPreferences, TERMUX_APP.KEY_TERMINAL_FOLLOW_THEME, TERMUX_APP.DEFAULT_VALUE_TERMINAL_FOLLOW_THEME);
+    }
+
+    public void setTerminalFollowTheme(boolean value) {
+        SharedPreferenceUtils.setBoolean(mSharedPreferences, TERMUX_APP.KEY_TERMINAL_FOLLOW_THEME, value, false);
+    }
+
 
 
     public static int[] getDefaultFontSizes(Context context) {

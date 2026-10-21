@@ -882,6 +882,15 @@ public final class TermuxService extends Service implements AppShell.AppShellCli
         return mShellManager.mTermuxSessions;
     }
 
+    /** Move a session to another position in the list, which is the order of the tabs and the drawer. */
+    public synchronized boolean moveTermuxSession(int from, int to) {
+        List<TermuxSession> sessions = mShellManager.mTermuxSessions;
+        if (from < 0 || from >= sessions.size() || to < 0 || to >= sessions.size() || from == to)
+            return false;
+        sessions.add(to, sessions.remove(from));
+        return true;
+    }
+
     @Nullable
     public synchronized TermuxSession getTermuxSession(int index) {
         if (index >= 0 && index < mShellManager.mTermuxSessions.size())

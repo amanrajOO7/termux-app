@@ -16,37 +16,108 @@
         android:layout_marginVertical="0dp"
         android:orientation="vertical">
 
-        <!-- Tab bar with the open terminal sessions, filled in by TerminalTabsController. -->
+        <!-- Tab bar and search bar, above the terminal. -->
         <LinearLayout
-            android:id="@+id/terminal_tabs_bar"
+            android:id="@+id/terminal_top_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
-            android:background="?attr/colorSurfaceContainer"
-            android:orientation="vertical"
-            android:paddingVertical="6dp"
-            android:visibility="gone">
+            android:orientation="vertical">
 
-            <HorizontalScrollView
-                android:id="@+id/terminal_tabs"
+            <!-- Tab bar with the open terminal sessions, filled in by TerminalTabsController. -->
+            <LinearLayout
+                android:id="@+id/terminal_tabs_bar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingHorizontal="6dp"
-                android:scrollbars="none">
+                android:background="?attr/colorSurfaceContainer"
+                android:orientation="vertical"
+                android:paddingVertical="6dp"
+                android:visibility="gone">
 
-                <LinearLayout
-                    android:id="@+id/terminal_tabs_strip"
+                <HorizontalScrollView
+                    android:id="@+id/terminal_tabs"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingHorizontal="6dp"
+                    android:scrollbars="none">
+
+                    <LinearLayout
+                        android:id="@+id/terminal_tabs_strip"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal" />
+                </HorizontalScrollView>
+            </LinearLayout>
+
+            <!-- Search in the scrollback, see TerminalSearchController. -->
+            <LinearLayout
+                android:id="@+id/terminal_search_bar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?attr/colorSurfaceContainer"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="8dp"
+                android:paddingEnd="4dp"
+                android:paddingBottom="6dp"
+                android:visibility="gone">
+
+                <EditText
+                    android:id="@+id/terminal_search_input"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_search_field"
+                    android:hint="@string/hint_search_scrollback"
+                    android:imeOptions="actionSearch|flagNoExtractUi"
+                    android:importantForAutofill="no"
+                    android:inputType="text"
+                    android:maxLines="1"
+                    android:paddingHorizontal="16dp"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textColorHint="?attr/colorOnSurfaceVariant"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/terminal_search_count"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal" />
-            </HorizontalScrollView>
+                    android:gravity="center"
+                    android:minWidth="48dp"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:textSize="12sp" />
+
+                <ImageButton
+                    android:id="@+id/terminal_search_prev"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/action_search_previous"
+                    android:src="@drawable/ic_search_prev" />
+
+                <ImageButton
+                    android:id="@+id/terminal_search_next"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/action_search_next"
+                    android:src="@drawable/ic_search_next" />
+
+                <ImageButton
+                    android:id="@+id/terminal_search_close"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/action_search_close"
+                    android:src="@drawable/ic_search_close" />
+            </LinearLayout>
         </LinearLayout>
 
         <androidx.drawerlayout.widget.DrawerLayout
             android:id="@+id/drawer_layout"
             android:layout_width="match_parent"
-            android:layout_below="@+id/terminal_tabs_bar"
+            android:layout_below="@+id/terminal_top_container"
             android:layout_above="@+id/terminal_toolbar_view_pager"
             android:layout_height="match_parent">
 

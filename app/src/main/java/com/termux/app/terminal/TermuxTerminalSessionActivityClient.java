@@ -14,6 +14,7 @@ import android.text.TextUtils;
 import android.widget.ListView;
 
 import androidx.annotation.NonNull;
+import com.google.android.material.color.MaterialColors;
 import androidx.annotation.Nullable;
 
 import com.termux.R;
@@ -118,7 +119,12 @@ public class TermuxTerminalSessionActivityClient extends TermuxTerminalSessionCl
     public void onTextChanged(@NonNull TerminalSession changedSession) {
         if (!mActivity.isVisible()) return;
 
-        if (mActivity.getCurrentSession() == changedSession) mActivity.getTerminalView().onScreenUpdated();
+        if (mActivity.getCurrentSession() == changedSession) {
+            mActivity.getTerminalView().onScreenUpdated();
+        } else if (mActivity.getTerminalTabsController() != null) {
+            // Mark the tab of a session in the background, which printed something.
+            mActivity.getTerminalTabsController().markUnread(changedSession);
+        }
     }
 
     @Override
@@ -506,6 +512,7 @@ public class TermuxTerminalSessionActivityClient extends TermuxTerminalSessionCl
             }
 
             TerminalColors.COLOR_SCHEME.updateWith(props);
+            applyThemeColors(props);
             TerminalSession session = mActivity.getCurrentSession();
             if (session != null && session.getEmulator() != null) {
                 session.getEmulator().mColors.reset();
@@ -519,12 +526,42 @@ public class TermuxTerminalSessionActivityClient extends TermuxTerminalSessionCl
         }
     }
 
+    /**
+     * When the user turned on "Terminal uses theme colors", use the surface, on-surface and primary
+     * colors of the app theme (dynamic color on Android 12+) for the terminal background, text and
+     * cursor. Colors that the user set in colors.properties, or a color scheme picked in the
+     * style picker, always win, so this is only applied to what the properties leave out.
+     *
+     * Call this after {@code TerminalColors.COLOR_SCHEME.updateWith(props)}.
+     */
+    public void applyThemeColors(@Nullable Properties props) {
+        if (!mActivity.getPreferences().shouldTerminalFollowTheme()) return;
+
+        int[] colors = TerminalColors.COLOR_SCHEME.mDefaultColors;
+        boolean hasBackground = props != null && props.containsKey("background");
+        boolean hasForeground = props != null && props.containsKey("foreground");
+        boolean hasCursor = props != null && props.containsKey("cursor");
+
+        if (!hasBackground) {
+            colors[TextStyle.COLOR_INDEX_BACKGROUND] = 0xFF000000 | MaterialColors.getColor(mActivity, com.google.android.material.R.attr.colorSurface, 0xFF000000);
+        }
+        if (!hasForeground) {
+            colors[TextStyle.COLOR_INDEX_FOREGROUND] = 0xFF000000 | MaterialColors.getColor(mActivity, com.google.android.material.R.attr.colorOnSurface, 0xFFFFFFFF);
+        }
+        if (!hasCursor) {
+            colors[TextStyle.COLOR_INDEX_CURSOR] = 0xFF000000 | MaterialColors.getColor(mActivity, androidx.appcompat.R.attr.colorPrimary, 0xFFFFFFFF);
+        }
+    }
+
+    /**
+     * The window behind the terminal, the status bar and the margins around the terminal use the
+     * surface container color of the theme, the same as the tab bar, extra keys and drawer, so the
+     * bars look like part of the app. The terminal view paints its own background on top of this.
+     */
     public void updateBackgroundColor() {
         if (!mActivity.isVisible()) return;
-        TerminalSession session = mActivity.getCurrentSession();
-        if (session != null && session.getEmulator() != null) {
-            mActivity.getWindow().getDecorView().setBackgroundColor(session.getEmulator().mColors.mCurrentColors[TextStyle.COLOR_INDEX_BACKGROUND]);
-        }
+        mActivity.getWindow().getDecorView().setBackgroundColor(
+            MaterialColors.getColor(mActivity, com.google.android.material.R.attr.colorSurfaceContainer, 0xFF000000));
     }
 
 }

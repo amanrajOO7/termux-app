@@ -39,6 +39,7 @@ import com.termux.R;
 import com.termux.app.api.file.FileReceiverActivity;
 import com.termux.app.terminal.ContextActionSheet;
 import com.termux.app.terminal.TermuxActivityRootView;
+import com.termux.app.terminal.TerminalSearchController;
 import com.termux.app.terminal.TerminalTabsController;
 import com.termux.app.terminal.TermuxTerminalSessionActivityClient;
 import com.termux.app.terminal.io.TermuxTerminalExtraKeys;
@@ -117,6 +118,7 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
 
     /** Shows the open terminal sessions as tabs. */
     private TerminalTabsController mTerminalTabsController;
+    private TerminalSearchController mTerminalSearchController;
 
     /** Picks a font file for {@link StylePicker}. */
     private ActivityResultLauncher<String[]> mFontFileLauncher;
@@ -255,6 +257,8 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
 
         mTerminalTabsController = new TerminalTabsController(this,
             findViewById(R.id.terminal_tabs_bar), findViewById(R.id.terminal_tabs), findViewById(R.id.terminal_tabs_strip));
+
+        mTerminalSearchController = new TerminalSearchController(this);
 
         setTerminalToolbarView(savedInstanceState);
 
@@ -617,7 +621,9 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
     @SuppressLint("RtlHardcoded")
     @Override
     public void onBackPressed() {
-        if (getDrawer().isDrawerOpen(Gravity.LEFT)) {
+        if (mTerminalSearchController != null && mTerminalSearchController.isOpen()) {
+            mTerminalSearchController.close();
+        } else if (getDrawer().isDrawerOpen(Gravity.LEFT)) {
             getDrawer().closeDrawers();
         } else {
             finishActivityIfNotFinishing();
@@ -679,8 +685,14 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
         sheet.addRow(R.string.action_reset_terminal, true, () -> onResetTerminalSession(currentSession))
             .addRow(getResources().getString(R.string.action_kill_process, currentSession.getPid()), currentSession.isRunning(),
                 () -> showKillSessionDialog(currentSession))
+            .addRow(R.string.action_search_scrollback, true, () -> mTerminalSearchController.open())
             .addRow(R.string.action_edit_extra_keys, true, () -> ExtraKeysEditor.show(this))
             .addRow(R.string.action_style_terminal, true, () -> showStylingDialog())
+            .addSwitchRow(R.string.action_terminal_follow_theme, mPreferences.shouldTerminalFollowTheme(), checked -> {
+                mPreferences.setTerminalFollowTheme(checked);
+                mTermuxTerminalSessionActivityClient.checkForFontAndColors();
+                mTerminalView.onScreenUpdated();
+            })
             .addSwitchRow(R.string.action_toggle_keep_screen_on, mPreferences.shouldKeepScreenOn(), checked -> toggleKeepScreenOn())
             .addRow(R.string.action_open_help, true, () -> ActivityUtils.startActivity(this, new Intent(this, HelpActivity.class)))
             .addRow(R.string.action_open_settings, true, () -> ActivityUtils.startActivity(this, new Intent(this, SettingsActivity.class)))
@@ -717,7 +729,10 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
     private final StylePicker.Previewer mStylePreviewer = new StylePicker.Previewer() {
         @Override
         public void previewColors(@Nullable Properties colors) {
-            TerminalColors.COLOR_SCHEME.updateWith(colors != null ? colors : new Properties());
+            Properties props = colors != null ? colors : new Properties();
+            TerminalColors.COLOR_SCHEME.updateWith(props);
+            if (mTermuxTerminalSessionActivityClient != null)
+                mTermuxTerminalSessionActivityClient.applyThemeColors(props);
             TerminalSession session = getCurrentSession();
             if (session != null && session.getEmulator() != null) {
                 session.getEmulator().mColors.reset();
@@ -897,6 +912,19 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
     /** Update the tab bar of the open terminal sessions, see {@link TerminalTabsController}. */
     public void updateTerminalTabs() {
         if (mTerminalTabsController != null) mTerminalTabsController.update();
+        if (mTerminalSearchController != null) mTerminalSearchController.onSessionChanged();
+    }
+
+    /** The search in the scrollback, see {@link TerminalSearchController}. */
+    @Nullable
+    public TerminalSearchController getTerminalSearchController() {
+        return mTerminalSearchController;
+    }
+
+    /** The tab bar of the sessions, see {@link TerminalTabsController}. */
+    @Nullable
+    public TerminalTabsController getTerminalTabsController() {
+        return mTerminalTabsController;
     }
 
     public boolean isVisible() {

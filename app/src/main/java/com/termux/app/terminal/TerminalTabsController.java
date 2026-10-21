@@ -28,7 +28,9 @@ import com.termux.shared.termux.shell.command.runner.terminal.TermuxSession;
 import com.termux.terminal.TerminalSession;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Shows the open terminal sessions as a row of tabs above the terminal. The selected tab uses the
@@ -36,7 +38,9 @@ import java.util.List;
  * container color. Each tab has
  * a small x to close it, and a + at the end of the row adds a new session.
  *
- * Tapping a tab switches to its session and long pressing it renames the session.
+ * Tapping a tab switches to its session. Long pressing it opens a menu to rename it, move it left
+ * or right, or close the other tabs. A tab of a session in the background shows a dot when the
+ * session printed something since it was last shown.
  *
  * The tabs follow the sessions of the {@link TermuxService}, so they are rebuilt from
  * {@link TermuxActivity#updateTerminalTabs()} whenever the sessions, their titles or the current
@@ -56,6 +60,10 @@ public class TerminalTabsController {
     private final List<TerminalSession> mShownSessions = new ArrayList<>();
     private final List<String> mShownTitles = new ArrayList<>();
     private int mShownSelected = -1;
+    private final Set<TerminalSession> mShownUnread = new HashSet<>();
+
+    /** Sessions in the background with output that was not seen yet. */
+    private final Set<TerminalSession> mUnread = new HashSet<>();
 
     public TerminalTabsController(@NonNull TermuxActivity activity, @NonNull View bar,
                                   @NonNull HorizontalScrollView scroll, @NonNull LinearLayout strip) {
@@ -84,9 +92,20 @@ public class TerminalTabsController {
         }
         int selected = sessions.indexOf(mActivity.getCurrentSession());
 
-        if (!sessions.equals(mShownSessions) || !titles.equals(mShownTitles) || selected != mShownSelected) {
+        // The session on screen has no unread output, and closed sessions are forgotten.
+        if (selected >= 0) mUnread.remove(sessions.get(selected));
+        mUnread.retainAll(sessions);
+
+        if (!sessions.equals(mShownSessions) || !titles.equals(mShownTitles) || selected != mShownSelected
+            || !mUnread.equals(mShownUnread)) {
             rebuild(sessions, titles, selected);
         }
+    }
+
+    /** A session in the background printed something, show a dot on its tab. */
+    public void markUnread(@NonNull TerminalSession session) {
+        if (session == mActivity.getCurrentSession() || !mShownSessions.contains(session)) return;
+        if (mUnread.add(session)) update();
     }
 
     private void rebuild(List<TerminalSession> sessions, List<String> titles, int selected) {
@@ -105,6 +124,8 @@ public class TerminalTabsController {
         mShownTitles.clear();
         mShownTitles.addAll(titles);
         mShownSelected = selected;
+        mShownUnread.clear();
+        mShownUnread.addAll(mUnread);
 
         // Keep the selected tab in view when there are more tabs than fit on screen.
         if (selectedView != null) {
@@ -143,6 +164,19 @@ public class TerminalTabsController {
         tabParams.setMarginEnd(dp(6));
         tab.setLayoutParams(tabParams);
 
+        if (mUnread.contains(session) && !selected) {
+            // A small dot for output that was not seen yet, in the accent color of the tab text.
+            View dot = new View(context);
+            GradientDrawable dotShape = new GradientDrawable();
+            dotShape.setShape(GradientDrawable.OVAL);
+            dotShape.setColor(color(context, com.google.android.material.R.attr.colorTertiary, foreground));
+            dot.setBackground(dotShape);
+            dot.setContentDescription(context.getString(R.string.tab_unread_output));
+            LinearLayout.LayoutParams dotParams = new LinearLayout.LayoutParams(dp(7), dp(7));
+            dotParams.setMarginEnd(dp(6));
+            tab.addView(dot, dotParams);
+        }
+
         TextView label = new TextView(context);
         label.setText(title);
         label.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
@@ -173,7 +207,7 @@ public class TerminalTabsController {
             }
         });
         tab.setOnLongClickListener(v -> {
-            mActivity.getTermuxTerminalSessionClient().renameSession(session);
+            showTabMenu(session);
             return true;
         });
 
@@ -200,6 +234,46 @@ public class TerminalTabsController {
         add.setOnClickListener(v -> mActivity.getTermuxTerminalSessionClient().addNewSession(false, null));
         add.setLayoutParams(new LinearLayout.LayoutParams(dp(36), dp(36)));
         return add;
+    }
+
+    private void showTabMenu(TerminalSession session) {
+        int index = indexOf(session);
+        int count = mShownSessions.size();
+        new ContextActionSheet(mActivity)
+            .addRow(R.string.action_tab_rename, true, () -> mActivity.getTermuxTerminalSessionClient().renameSession(session))
+            .addRow(R.string.action_tab_move_left, index > 0, () -> moveTab(index, index - 1))
+            .addRow(R.string.action_tab_move_right, index >= 0 && index < count - 1, () -> moveTab(index, index + 1))
+            .addRow(R.string.action_tab_close_others, count > 1, () -> closeOthers(session))
+            .show();
+    }
+
+    private int indexOf(TerminalSession session) {
+        return mShownSessions.indexOf(session);
+    }
+
+    /** Move a tab, which also moves the session in the drawer. */
+    private void moveTab(int from, int to) {
+        TermuxService service = mActivity.getTermuxService();
+        if (service != null && service.moveTermuxSession(from, to)) {
+            mActivity.termuxSessionListNotifyUpdated();
+        }
+    }
+
+    private void closeOthers(TerminalSession keep) {
+        new AlertDialog.Builder(mActivity)
+            .setMessage(R.string.msg_confirm_close_other_tabs)
+            .setPositiveButton(android.R.string.yes, (dialog, which) -> {
+                for (TerminalSession other : new ArrayList<>(mShownSessions)) {
+                    if (other == keep) continue;
+                    if (other.isRunning()) {
+                        other.finishIfRunning();
+                    } else {
+                        mActivity.getTermuxTerminalSessionClient().removeFinishedSession(other);
+                    }
+                }
+            })
+            .setNegativeButton(android.R.string.no, null)
+            .show();
     }
 
     private void closeTab(TerminalSession session) {

@@ -1003,6 +1003,29 @@ public final class TerminalView extends View {
         }
     }
 
+    private static final int NO_HIGHLIGHT = Integer.MIN_VALUE;
+
+    /** The row to highlight as a search match, or {@link #NO_HIGHLIGHT}. */
+    private int mHighlightRow = NO_HIGHLIGHT;
+
+    /**
+     * Highlight a whole row of the screen or its history (rows above the screen are negative),
+     * used to mark the current search match. Pass {@link Integer#MIN_VALUE} to clear it.
+     */
+    public void setHighlightedRow(int row) {
+        mHighlightRow = row;
+        invalidate();
+    }
+
+    /** Scroll so that the row is in the middle of the view, rows in the history are negative. */
+    public void scrollToRow(int row) {
+        if (mEmulator == null) return;
+        int history = mEmulator.getScreen().getActiveTranscriptRows();
+        int top = row - mEmulator.mRows / 2;
+        mTopRow = Math.max(-history, Math.min(0, top));
+        invalidate();
+    }
+
     @Override
     protected void onDraw(Canvas canvas) {
         if (mEmulator == null) {
@@ -1012,6 +1035,12 @@ public final class TerminalView extends View {
             int[] sel = mDefaultSelectors;
             if (mTextSelectionCursorController != null) {
                 mTextSelectionCursorController.getSelectors(sel);
+            }
+
+            // Highlight the row of the current search match when no text is selected.
+            if (mHighlightRow != NO_HIGHLIGHT && !isSelectingText()) {
+                // The selectors are Y1, Y2, X1 and X2.
+                sel = new int[]{mHighlightRow, mHighlightRow, 0, mEmulator.mColumns};
             }
 
             mRenderer.render(mEmulator, canvas, mTopRow, sel[0], sel[1], sel[2], sel[3]);

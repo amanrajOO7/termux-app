@@ -283,4 +283,22 @@
     <!-- Donate Preference -->
     <string name="donate_preference_title">Donate</string>
 
+    <!-- Scrollback search -->
+    <string name="action_search_scrollback">Search scrollback</string>
+    <string name="hint_search_scrollback">Search</string>
+    <string name="action_search_previous">Previous match</string>
+    <string name="action_search_next">Next match</string>
+    <string name="action_search_close">Close search</string>
+
+    <!-- Tab menu -->
+    <string name="action_tab_rename">Rename</string>
+    <string name="action_tab_move_left">Move left</string>
+    <string name="action_tab_move_right">Move right</string>
+    <string name="action_tab_close_others">Close other tabs</string>
+    <string name="msg_confirm_close_other_tabs">Close all other tabs? Running processes in them will be killed.</string>
+    <string name="tab_unread_output">New output</string>
+
+    <!-- Terminal colors -->
+    <string name="action_terminal_follow_theme">Terminal uses theme colors</string>
+
 </resources>
