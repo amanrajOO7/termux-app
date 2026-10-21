@@ -21,6 +21,7 @@ import androidx.core.graphics.ColorUtils;
 import androidx.core.widget.ImageViewCompat;
 
 import com.google.android.material.color.MaterialColors;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.termux.R;
 import com.termux.app.TermuxActivity;
 import com.termux.app.TermuxService;
@@ -260,7 +261,7 @@ public class TerminalTabsController {
     }
 
     private void closeOthers(TerminalSession keep) {
-        new AlertDialog.Builder(mActivity)
+        new MaterialAlertDialogBuilder(mActivity)
             .setMessage(R.string.msg_confirm_close_other_tabs)
             .setPositiveButton(android.R.string.yes, (dialog, which) -> {
                 for (TerminalSession other : new ArrayList<>(mShownSessions)) {
@@ -278,7 +279,7 @@ public class TerminalTabsController {
 
     private void closeTab(TerminalSession session) {
         if (session.isRunning()) {
-            new AlertDialog.Builder(mActivity)
+            new MaterialAlertDialogBuilder(mActivity)
                 .setMessage(R.string.title_confirm_kill_process)
                 .setPositiveButton(android.R.string.yes, (dialog, which) -> session.finishIfRunning())
                 .setNegativeButton(android.R.string.no, null)
