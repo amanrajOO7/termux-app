@@ -25,6 +25,13 @@
         app:summaryOff="@string/termux_show_session_tabs_summary_off"
         app:summaryOn="@string/termux_show_session_tabs_summary_on" />
 
+    <SwitchPreferenceCompat
+        app:key="terminal_material_background"
+        app:icon="@drawable/ic_preference_terminal"
+        app:title="@string/termux_material_background_title"
+        app:summaryOff="@string/termux_material_background_summary_off"
+        app:summaryOn="@string/termux_material_background_summary_on" />
+
     <Preference
         app:key="extra_keys_editor"
         app:icon="@drawable/ic_preference_keyboard"

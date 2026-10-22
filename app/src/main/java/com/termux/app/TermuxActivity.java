@@ -683,6 +683,11 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
             .addRow(R.string.action_search_scrollback, true, () -> mTerminalSearchController.open())
             .addRow(R.string.action_edit_extra_keys, true, () -> ExtraKeysEditor.show(this))
             .addRow(R.string.action_style_terminal, true, () -> showStylingPluginDialog())
+            .addSwitchRow(R.string.action_terminal_material_background, mPreferences.shouldTerminalUseMaterialBackground(), checked -> {
+                mPreferences.setTerminalUseMaterialBackground(checked);
+                mTermuxTerminalSessionActivityClient.updateBackgroundColor();
+                mTerminalView.onScreenUpdated();
+            })
             .addSwitchRow(R.string.action_toggle_keep_screen_on, mPreferences.shouldKeepScreenOn(), checked -> toggleKeepScreenOn())
             .addRow(R.string.action_open_help, true, () -> ActivityUtils.startActivity(this, new Intent(this, HelpActivity.class)))
             .addRow(R.string.action_open_settings, true, () -> ActivityUtils.startActivity(this, new Intent(this, SettingsActivity.class)))

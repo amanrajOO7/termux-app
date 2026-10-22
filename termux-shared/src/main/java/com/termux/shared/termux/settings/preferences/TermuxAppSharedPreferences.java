@@ -140,6 +140,15 @@ public class TermuxAppSharedPreferences extends AppSharedPreferences {
         SharedPreferenceUtils.setBoolean(mSharedPreferences, TERMUX_APP.KEY_SHOW_SESSION_TABS, value, false);
     }
 
+    /** Whether the terminal background stays the app color, while only the text follows the color scheme. */
+    public boolean shouldTerminalUseMaterialBackground() {
+        return SharedPreferenceUtils.getBoolean(mSharedPreferences, TERMUX_APP.KEY_TERMINAL_MATERIAL_BACKGROUND, TERMUX_APP.DEFAULT_VALUE_TERMINAL_MATERIAL_BACKGROUND);
+    }
+
+    public void setTerminalUseMaterialBackground(boolean value) {
+        SharedPreferenceUtils.setBoolean(mSharedPreferences, TERMUX_APP.KEY_TERMINAL_MATERIAL_BACKGROUND, value, false);
+    }
+
 
 
     public static int[] getDefaultFontSizes(Context context) {

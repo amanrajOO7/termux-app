@@ -533,11 +533,14 @@ public class TermuxTerminalSessionActivityClient extends TermuxTerminalSessionCl
             MaterialColors.getColor(mActivity, com.google.android.material.R.attr.colorSurfaceContainer, 0xFF000000));
 
         // The renderer only paints cells whose background differs from the default one, so the default
-        // background is the one of the terminal view, which is the background of the color scheme.
+        // background is the one of the terminal view. It is either the app color, which stays the same
+        // with every color scheme, or the background of the color scheme.
         TerminalSession session = mActivity.getCurrentSession();
         if (session != null && session.getEmulator() != null) {
-            mActivity.getTerminalView().setBackgroundColor(
-                session.getEmulator().mColors.mCurrentColors[TextStyle.COLOR_INDEX_BACKGROUND]);
+            int background = mActivity.getPreferences().shouldTerminalUseMaterialBackground()
+                ? 0xFF000000 | MaterialColors.getColor(mActivity, com.google.android.material.R.attr.colorSurfaceContainer, 0x000000)
+                : session.getEmulator().mColors.mCurrentColors[TextStyle.COLOR_INDEX_BACKGROUND];
+            mActivity.getTerminalView().setBackgroundColor(background);
         }
     }
 

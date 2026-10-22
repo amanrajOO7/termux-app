@@ -119,6 +119,10 @@
     <string name="termux_show_session_tabs_title">Session tabs</string>
     <string name="termux_show_session_tabs_summary_on">Tabs for the open terminals are shown above the terminal</string>
     <string name="termux_show_session_tabs_summary_off">The open terminals are only listed in the drawer</string>
+    <string name="termux_material_background_title">Material background</string>
+    <string name="termux_material_background_summary_on">The terminal background stays the app color, only the text follows the color scheme</string>
+    <string name="termux_material_background_summary_off">The whole color scheme, including its background, is applied</string>
+    <string name="action_terminal_material_background">Material background</string>
     <string name="action_toggle_keep_screen_on">Keep screen on</string>
     <string name="action_open_help">Help</string>
     <string name="action_open_settings">Settings</string>

@@ -137,6 +137,10 @@ public final class TermuxPreferenceConstants {
         public static final String KEY_SHOW_SESSION_TABS = "show_session_tabs";
         public static final boolean DEFAULT_VALUE_SHOW_SESSION_TABS = true;
 
+        /** Defines the key for whether the terminal background stays the app color instead of the color scheme background. */
+        public static final String KEY_TERMINAL_MATERIAL_BACKGROUND = "terminal_material_background";
+        public static final boolean DEFAULT_VALUE_TERMINAL_MATERIAL_BACKGROUND = false;
+
 
         /**
          * Defines the key for font size of termux terminal view.
