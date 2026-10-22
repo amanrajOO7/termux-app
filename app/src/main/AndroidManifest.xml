@@ -92,6 +92,7 @@
         <activity
             android:name=".app.activities.HelpActivity"
             android:exported="false"
+            android:theme="@style/Theme.TermuxApp.DayNight.DarkActionBar"
             android:label="@string/application_name"
             android:parentActivityName=".app.TermuxActivity"
             android:resizeableActivity="true"

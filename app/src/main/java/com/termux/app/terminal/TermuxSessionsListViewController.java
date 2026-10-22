@@ -1,4 +1,4 @@
-	package com.termux.app.terminal;
+package com.termux.app.terminal;
 
 import android.annotation.SuppressLint;
 import android.content.res.ColorStateList;
@@ -96,7 +96,7 @@ public class TermuxSessionsListViewController extends ArrayAdapter<TermuxSession
         sessionTitleView.setPaintFlags((sessionTitleView.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG) | strikeFlag);
         sessionSubtitleView.setPaintFlags((sessionSubtitleView.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG) | strikeFlag);
 
-	int errorColor = MaterialColors.getColor(mActivity, androidx.appcompat.R.attr.colorError, Color.RED);
+        int errorColor = MaterialColors.getColor(mActivity, com.google.android.material.R.attr.colorError, Color.RED);
         sessionTitleView.setTextColor(sessionFailed ? errorColor : mDefaultTitleColor);
         sessionSubtitleView.setTextColor(sessionFailed ? errorColor : mDefaultSubtitleColor);
 
