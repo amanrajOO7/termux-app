@@ -9,13 +9,30 @@
     android:paddingStart="24dp"
     android:paddingEnd="24dp">
 
-    <TextView
-        android:id="@+id/sheet_row_label"
+    <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:textColor="?attr/colorOnSurface"
-        android:textSize="16sp" />
+        android:orientation="vertical"
+        android:paddingVertical="12dp">
+
+        <TextView
+            android:id="@+id/sheet_row_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="?attr/colorOnSurface"
+            android:textSize="16sp" />
+
+        <!-- Only shown for rows that have a subtitle, such as the applied style. -->
+        <TextView
+            android:id="@+id/sheet_row_subtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            android:textSize="13sp"
+            android:visibility="gone" />
+
+    </LinearLayout>
 
     <com.google.android.material.materialswitch.MaterialSwitch
         android:id="@+id/sheet_row_switch"

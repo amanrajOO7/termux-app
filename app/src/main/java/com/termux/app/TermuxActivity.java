@@ -8,6 +8,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -682,7 +684,7 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
                 () -> showKillSessionDialog(currentSession))
             .addRow(R.string.action_search_scrollback, true, () -> mTerminalSearchController.open())
             .addRow(R.string.action_edit_extra_keys, true, () -> ExtraKeysEditor.show(this))
-            .addRow(R.string.action_style_terminal, true, () -> showStylingPluginDialog())
+            .addRow(getText(R.string.action_style_terminal), getStylingSummary(), true, () -> showStylingPluginDialog())
             .addSwitchRow(R.string.action_terminal_material_background, mPreferences.shouldTerminalUseMaterialBackground(), checked -> {
                 mPreferences.setTerminalUseMaterialBackground(checked);
                 mTermuxTerminalSessionActivityClient.updateBackgroundColor();
@@ -720,6 +722,22 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
         }
     }
 
+    /**
+     * The color scheme and font that Termux:Styling applied last, shown under the Style row. Termux:Styling
+     * shares the user id of this app, so its preferences can be read. Returns null if it is not installed.
+     */
+    private String getStylingSummary() {
+        try {
+            Context styling = createPackageContext(TermuxConstants.TERMUX_STYLING_PACKAGE_NAME, Context.CONTEXT_IGNORE_SECURITY);
+            SharedPreferences prefs = styling.getSharedPreferences("style", Context.MODE_PRIVATE);
+            String defaultName = getString(R.string.styling_default_name);
+            return getString(R.string.styling_summary,
+                prefs.getString("color_title", defaultName), prefs.getString("font_title", defaultName));
+        } catch (PackageManager.NameNotFoundException e) {
+            return null;
+        }
+    }
+
     private void showStylingPluginDialog() {
         Intent stylingIntent = new Intent();
         stylingIntent.setClassName(TermuxConstants.TERMUX_STYLING_PACKAGE_NAME, TermuxConstants.TERMUX_STYLING_APP.TERMUX_STYLING_ACTIVITY_NAME);
@@ -731,6 +749,8 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
             new MaterialAlertDialogBuilder(this).setMessage(getString(R.string.error_styling_not_installed))
                 .setPositiveButton(R.string.action_styling_install,
                     (dialog, which) -> ActivityUtils.startActivity(this, new Intent(Intent.ACTION_VIEW, Uri.parse(TermuxConstants.TERMUX_STYLING_FDROID_PACKAGE_URL))))
+                .setNeutralButton(R.string.action_styling_github,
+                    (dialog, which) -> ActivityUtils.startActivity(this, new Intent(Intent.ACTION_VIEW, Uri.parse(TermuxConstants.TERMUX_STYLING_GITHUB_REPO_URL))))
                 .setNegativeButton(android.R.string.cancel, null).show();
         }
     }

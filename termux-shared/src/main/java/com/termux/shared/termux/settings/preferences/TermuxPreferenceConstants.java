@@ -139,7 +139,7 @@ public final class TermuxPreferenceConstants {
 
         /** Defines the key for whether the terminal background stays the app color instead of the color scheme background. */
         public static final String KEY_TERMINAL_MATERIAL_BACKGROUND = "terminal_material_background";
-        public static final boolean DEFAULT_VALUE_TERMINAL_MATERIAL_BACKGROUND = false;
+        public static final boolean DEFAULT_VALUE_TERMINAL_MATERIAL_BACKGROUND = true;
 
 
         /**

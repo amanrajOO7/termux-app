@@ -41,6 +41,7 @@ public class ContextActionSheet {
         final Action action;
         final ToggleAction toggleAction;
         final boolean checked;
+        @Nullable CharSequence subtitle;
 
         Item(CharSequence label, boolean enabled, Action action, ToggleAction toggleAction, boolean checked) {
             this.label = label;
@@ -74,6 +75,14 @@ public class ContextActionSheet {
 
     public ContextActionSheet addRow(@StringRes int label, boolean enabled, @NonNull Action action) {
         return addRow(mContext.getText(label), enabled, action);
+    }
+
+    /** Add a row with a second line of smaller text under its label. A null subtitle hides the line. */
+    public ContextActionSheet addRow(CharSequence label, @Nullable CharSequence subtitle, boolean enabled, @NonNull Action action) {
+        Item item = new Item(label, enabled, action, null, false);
+        item.subtitle = subtitle;
+        mRows.add(item);
+        return this;
     }
 
     /** Add a row with a switch to the sheet. */
@@ -121,6 +130,11 @@ public class ContextActionSheet {
             View row = inflater.inflate(R.layout.item_context_menu_row, rows, false);
             TextView label = row.findViewById(R.id.sheet_row_label);
             label.setText(item.label);
+            if (item.subtitle != null) {
+                TextView subtitle = row.findViewById(R.id.sheet_row_subtitle);
+                subtitle.setText(item.subtitle);
+                subtitle.setVisibility(View.VISIBLE);
+            }
             row.setEnabled(item.enabled);
             row.setAlpha(item.enabled ? 1f : 0.38f);
 

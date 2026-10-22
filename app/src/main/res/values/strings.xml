@@ -133,6 +133,9 @@
 
     <string name="error_styling_not_installed">The &TERMUX_STYLING_APP_NAME; Plugin App is not installed.</string>
     <string name="action_styling_install">Install</string>
+    <string name="action_styling_github">GitHub</string>
+    <string name="styling_default_name">Termux default</string>
+    <string name="styling_summary">%1$s · %2$s</string>
 
 
 
