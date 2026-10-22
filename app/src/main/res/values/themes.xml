@@ -42,6 +42,8 @@
         <item name="termuxActivityDrawerImageTint">?attr/colorOnSurface</item>
         <item name="termuxSessionItemBackground">@drawable/session_background_selected</item>
         <item name="termuxSessionItemTitleColor">?attr/colorOnSurface</item>
+        <!-- The Material 3 error color, for sessions that failed. -->
+        <item name="termuxSessionFailedColor">#FFB3261E</item>
         <item name="termuxSessionItemSubtitleColor">?attr/colorOnSurfaceVariant</item>
         <!-- Extra keys colors, follow the theme colors (dynamic color on Android 12+). -->
         <item name="extraKeysButtonTextColor">?attr/colorOnSurface</item>

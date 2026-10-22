@@ -6,4 +6,5 @@
     <!-- Left drawer session list item. -->
     <attr name="termuxSessionItemBackground" format="reference" />
     <attr name="termuxSessionItemTitleColor" format="reference|color" />
-    <attr name="termuxSessionItemSubtitleColor" format="reference|color" /></resources>
+    <attr name="termuxSessionItemSubtitleColor" format="reference|color" />
+    <attr name="termuxSessionFailedColor" format="reference|color" /></resources>

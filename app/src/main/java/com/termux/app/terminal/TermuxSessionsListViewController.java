@@ -16,7 +16,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 
-import com.google.android.material.color.MaterialColors;
 
 import com.termux.R;
 import com.termux.app.TermuxActivity;
@@ -96,7 +95,7 @@ public class TermuxSessionsListViewController extends ArrayAdapter<TermuxSession
         sessionTitleView.setPaintFlags((sessionTitleView.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG) | strikeFlag);
         sessionSubtitleView.setPaintFlags((sessionSubtitleView.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG) | strikeFlag);
 
-        int errorColor = MaterialColors.getColor(mActivity, com.google.android.material.R.attr.colorError, Color.RED);
+        int errorColor = resolveThemeColor(R.attr.termuxSessionFailedColor, Color.RED);
         sessionTitleView.setTextColor(sessionFailed ? errorColor : mDefaultTitleColor);
         sessionSubtitleView.setTextColor(sessionFailed ? errorColor : mDefaultSubtitleColor);
 
