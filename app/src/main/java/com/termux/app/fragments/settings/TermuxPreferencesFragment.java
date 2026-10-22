@@ -3,8 +3,6 @@ package com.termux.app.fragments.settings;
 import android.content.Context;
 import android.os.Bundle;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Keep;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceDataStore;
@@ -13,23 +11,10 @@ import androidx.preference.PreferenceManager;
 
 import com.termux.R;
 import com.termux.app.extrakeys.ExtraKeysEditor;
-import com.termux.app.style.StylePicker;
 import com.termux.shared.termux.settings.preferences.TermuxAppSharedPreferences;
 
 @Keep
 public class TermuxPreferencesFragment extends PreferenceFragmentCompat {
-
-    private ActivityResultLauncher<String[]> mFontFileLauncher;
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        mFontFileLauncher = registerForActivityResult(new ActivityResultContracts.OpenDocument(), uri -> {
-            Context context = getContext();
-            if (uri != null && context != null) StylePicker.installFontFromUri(context, uri);
-        });
-    }
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -45,22 +30,6 @@ public class TermuxPreferencesFragment extends PreferenceFragmentCompat {
         if (extraKeys != null) {
             extraKeys.setOnPreferenceClickListener(preference -> {
                 ExtraKeysEditor.show(requireContext());
-                return true;
-            });
-        }
-
-        Preference colorScheme = findPreference("style_color_scheme");
-        if (colorScheme != null) {
-            colorScheme.setOnPreferenceClickListener(preference -> {
-                StylePicker.showColorSchemePicker(requireContext(), null);
-                return true;
-            });
-        }
-
-        Preference font = findPreference("style_font");
-        if (font != null) {
-            font.setOnPreferenceClickListener(preference -> {
-                StylePicker.showFontPicker(requireContext(), null, () -> mFontFileLauncher.launch(new String[]{"*/*"}));
                 return true;
             });
         }

@@ -2,10 +2,6 @@ package com.termux.app.terminal;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.ClipData;
-import android.content.ClipboardManager;
-import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.media.AudioAttributes;
@@ -32,7 +28,6 @@ import com.termux.shared.logger.Logger;
 import com.termux.terminal.TerminalColors;
 import com.termux.terminal.TerminalSession;
 import com.termux.terminal.TerminalSessionClient;
-import com.termux.terminal.TextStyle;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -513,7 +508,6 @@ public class TermuxTerminalSessionActivityClient extends TermuxTerminalSessionCl
             }
 
             TerminalColors.COLOR_SCHEME.updateWith(props);
-            applyThemeColors(props);
             TerminalSession session = mActivity.getCurrentSession();
             if (session != null && session.getEmulator() != null) {
                 session.getEmulator().mColors.reset();
@@ -524,33 +518,6 @@ public class TermuxTerminalSessionActivityClient extends TermuxTerminalSessionCl
             mActivity.getTerminalView().setTypeface(newTypeface);
         } catch (Exception e) {
             Logger.logStackTraceWithMessage(LOG_TAG, "Error in checkForFontAndColors()", e);
-        }
-    }
-
-    /**
-     * When the user turned on "Terminal uses theme colors", use the surface, on-surface and primary
-     * colors of the app theme (dynamic color on Android 12+) for the terminal background, text and
-     * cursor. Colors that the user set in colors.properties, or a color scheme picked in the
-     * style picker, always win, so this is only applied to what the properties leave out.
-     *
-     * Call this after {@code TerminalColors.COLOR_SCHEME.updateWith(props)}.
-     */
-    public void applyThemeColors(@Nullable Properties props) {
-        if (!mActivity.getPreferences().shouldTerminalFollowTheme()) return;
-
-        int[] colors = TerminalColors.COLOR_SCHEME.mDefaultColors;
-        boolean hasBackground = props != null && props.containsKey("background");
-        boolean hasForeground = props != null && props.containsKey("foreground");
-        boolean hasCursor = props != null && props.containsKey("cursor");
-
-        if (!hasBackground) {
-            colors[TextStyle.COLOR_INDEX_BACKGROUND] = 0xFF000000 | MaterialColors.getColor(mActivity, com.google.android.material.R.attr.colorSurface, 0xFF000000);
-        }
-        if (!hasForeground) {
-            colors[TextStyle.COLOR_INDEX_FOREGROUND] = 0xFF000000 | MaterialColors.getColor(mActivity, com.google.android.material.R.attr.colorOnSurface, 0xFFFFFFFF);
-        }
-        if (!hasCursor) {
-            colors[TextStyle.COLOR_INDEX_CURSOR] = 0xFF000000 | MaterialColors.getColor(mActivity, androidx.appcompat.R.attr.colorPrimary, 0xFFFFFFFF);
         }
     }
 

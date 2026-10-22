@@ -119,18 +119,6 @@
     <string name="termux_show_session_tabs_title">Session tabs</string>
     <string name="termux_show_session_tabs_summary_on">Tabs for the open terminals are shown above the terminal</string>
     <string name="termux_show_session_tabs_summary_off">The open terminals are only listed in the drawer</string>
-    <string name="style_title">Terminal style</string>
-    <string name="style_color_scheme_title">Color scheme</string>
-    <string name="style_color_scheme_default">Termux default</string>
-    <string name="style_font_title">Font</string>
-    <string name="style_font_default">Default (system monospace)</string>
-    <string name="style_font_choose_file">Choose a font file…</string>
-    <string name="style_font_invalid">That file is not a font that can be used.</string>
-    <string name="style_plugin">More styles (Termux:Styling)</string>
-    <string name="style_color_scheme_summary">Choose the colors of the terminal</string>
-    <string name="style_font_summary">Choose the font of the terminal</string>
-    <string name="style_apply">Apply</string>
-    <string name="style_save_failed">Could not save the style</string>
     <string name="action_toggle_keep_screen_on">Keep screen on</string>
     <string name="action_open_help">Help</string>
     <string name="action_open_settings">Settings</string>
@@ -298,7 +286,5 @@
     <string name="msg_confirm_close_other_tabs">Close all other tabs? Running processes in them will be killed.</string>
     <string name="tab_unread_output">New output</string>
 
-    <!-- Terminal colors -->
-    <string name="action_terminal_follow_theme">Terminal uses theme colors</string>
 
 </resources>

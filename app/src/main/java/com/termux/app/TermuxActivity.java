@@ -9,14 +9,12 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.net.Uri;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Gravity;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -26,13 +24,9 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.termux.app.extrakeys.ExtraKeysEditor;
-import com.termux.app.style.StylePicker;
-import com.termux.terminal.TerminalColors;
 
 import com.termux.R;
 import com.termux.app.api.file.FileReceiverActivity;
@@ -77,7 +71,6 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.viewpager.widget.ViewPager;
 
 import java.util.Arrays;
-import java.util.Properties;
 
 /**
  * A terminal emulator activity.
@@ -119,8 +112,6 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
     private TerminalTabsController mTerminalTabsController;
     private TerminalSearchController mTerminalSearchController;
 
-    /** Picks a font file for {@link StylePicker}. */
-    private ActivityResultLauncher<String[]> mFontFileLauncher;
 
     /**
      * Termux app shared preferences manager.
@@ -219,10 +210,6 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
         setActivityTheme();
 
         super.onCreate(savedInstanceState);
-
-        mFontFileLauncher = registerForActivityResult(new ActivityResultContracts.OpenDocument(), uri -> {
-            if (uri != null) StylePicker.installFontFromUri(this, uri);
-        });
 
         setContentView(R.layout.activity_termux);
 
@@ -686,12 +673,7 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
                 () -> showKillSessionDialog(currentSession))
             .addRow(R.string.action_search_scrollback, true, () -> mTerminalSearchController.open())
             .addRow(R.string.action_edit_extra_keys, true, () -> ExtraKeysEditor.show(this))
-            .addRow(R.string.action_style_terminal, true, () -> showStylingDialog())
-            .addSwitchRow(R.string.action_terminal_follow_theme, mPreferences.shouldTerminalFollowTheme(), checked -> {
-                mPreferences.setTerminalFollowTheme(checked);
-                mTermuxTerminalSessionActivityClient.checkForFontAndColors();
-                mTerminalView.onScreenUpdated();
-            })
+            .addRow(R.string.action_style_terminal, true, () -> showStylingPluginDialog())
             .addSwitchRow(R.string.action_toggle_keep_screen_on, mPreferences.shouldKeepScreenOn(), checked -> toggleKeepScreenOn())
             .addRow(R.string.action_open_help, true, () -> ActivityUtils.startActivity(this, new Intent(this, HelpActivity.class)))
             .addRow(R.string.action_open_settings, true, () -> ActivityUtils.startActivity(this, new Intent(this, SettingsActivity.class)))
@@ -722,62 +704,6 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
             if (mTermuxTerminalSessionActivityClient != null)
                 mTermuxTerminalSessionActivityClient.onResetTerminalSession();
         }
-    }
-
-    private final StylePicker.Previewer mStylePreviewer = new StylePicker.Previewer() {
-        @Override
-        public void previewColors(@Nullable Properties colors) {
-            Properties props = colors != null ? colors : new Properties();
-            TerminalColors.COLOR_SCHEME.updateWith(props);
-            if (mTermuxTerminalSessionActivityClient != null)
-                mTermuxTerminalSessionActivityClient.applyThemeColors(props);
-            TerminalSession session = getCurrentSession();
-            if (session != null && session.getEmulator() != null) {
-                session.getEmulator().mColors.reset();
-            }
-            if (mTermuxTerminalSessionActivityClient != null)
-                mTermuxTerminalSessionActivityClient.updateBackgroundColor();
-            mTerminalView.onScreenUpdated();
-        }
-
-        @Override
-        public void previewFont(@Nullable Typeface typeface) {
-            mTerminalView.setTypeface(typeface != null ? typeface : Typeface.MONOSPACE);
-        }
-
-        @Override
-        public void revert() {
-            if (mTermuxTerminalSessionActivityClient != null)
-                mTermuxTerminalSessionActivityClient.checkForFontAndColors();
-            mTerminalView.onScreenUpdated();
-        }
-    };
-
-    /** Let the user pick the color scheme and font, with the Termux:Styling plugin as another option. */
-    private void showStylingDialog() {
-        final CharSequence[] items = {
-            getString(R.string.style_color_scheme_title),
-            getString(R.string.style_font_title),
-            getString(R.string.style_plugin)
-        };
-
-        new MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.style_title)
-            .setItems(items, (dialog, which) -> {
-                switch (which) {
-                    case 0:
-                        StylePicker.showColorSchemePicker(this, mStylePreviewer);
-                        break;
-                    case 1:
-                        StylePicker.showFontPicker(this, mStylePreviewer,
-                            () -> mFontFileLauncher.launch(new String[]{"*/*"}));
-                        break;
-                    default:
-                        showStylingPluginDialog();
-                        break;
-                }
-            })
-            .show();
     }
 
     private void showStylingPluginDialog() {
