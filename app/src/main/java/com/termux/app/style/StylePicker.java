@@ -1,11 +1,14 @@
 package com.termux.app.style;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.StateListDrawable;
 import android.net.Uri;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -167,6 +170,8 @@ public final class StylePicker {
     /** Store the color scheme, {@code null} for the default colors, and tell the terminal to reload it. */
     public static void saveColorScheme(@NonNull Context context, @Nullable ColorSchemes.Scheme scheme) {
         File colorsFile = TermuxConstants.TERMUX_COLOR_PROPERTIES_FILE;
+        // A scheme replaces the colors file, so keep a copy of a file the user may have written by hand.
+        backupOnce(colorsFile);
         try {
             if (scheme == null) {
                 if (colorsFile.exists() && !colorsFile.delete()) {
@@ -211,7 +216,19 @@ public final class StylePicker {
      *                   that entry is clicked.
      */
     public static void showFontPicker(@NonNull Context context, @Nullable Previewer previewer, @Nullable Runnable chooseFile) {
-        final List<FontEntry> fonts = findFonts(context);
+        // Reading and parsing every system font takes a while, so do it off the UI thread.
+        final Context app = context.getApplicationContext() != null ? context.getApplicationContext() : context;
+        new Thread(() -> {
+            final List<FontEntry> found = findFonts(app);
+            new Handler(Looper.getMainLooper()).post(() -> {
+                if (context instanceof Activity && ((Activity) context).isFinishing()) return;
+                showFontDialog(context, previewer, chooseFile, found);
+            });
+        }, "termux-font-list").start();
+    }
+
+    private static void showFontDialog(@NonNull Context context, @Nullable Previewer previewer,
+                                       @Nullable Runnable chooseFile, @NonNull List<FontEntry> fonts) {
         final int total = fonts.size() + (chooseFile != null ? 1 : 0);
         final int[] selected = {-1};
         final boolean[] applied = {false};
@@ -346,6 +363,20 @@ public final class StylePicker {
         TermuxActivity.updateTermuxActivityStyling(context, false);
     }
 
+    /** Copy the file to a ".bak" file next to it, unless there already is one, so the first copy is kept. */
+    private static void backupOnce(File file) {
+        if (!file.isFile()) return;
+        File backup = new File(file.getPath() + ".bak");
+        if (backup.exists()) return;
+        try (InputStream in = new FileInputStream(file); OutputStream out = new FileOutputStream(backup)) {
+            byte[] buffer = new byte[8192];
+            int read;
+            while ((read = in.read(buffer)) != -1) out.write(buffer, 0, read);
+        } catch (IOException e) {
+            Logger.logStackTraceWithMessage(LOG_TAG, "Failed to back up " + file, e);
+        }
+    }
+
     /** Copy the font to a temporary file and only replace the font file if it can be loaded, so a bad file does not break the terminal. */
     private static void copyFont(InputStream in, File fontFile) throws IOException {
         File parent = fontFile.getParentFile();
@@ -362,9 +393,7 @@ public final class StylePicker {
             // Throws a RuntimeException if the file is not a font.
             Typeface.createFromFile(temp);
 
-            if (fontFile.exists() && !fontFile.delete()) {
-                throw new IOException("Could not replace " + fontFile.getAbsolutePath());
-            }
+            // renameTo replaces an existing file, so the current font stays in place until the new one is ready.
             if (!temp.renameTo(fontFile)) {
                 throw new IOException("Could not move the font to " + fontFile.getAbsolutePath());
             }

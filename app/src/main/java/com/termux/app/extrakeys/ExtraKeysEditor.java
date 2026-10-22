@@ -549,10 +549,18 @@ public final class ExtraKeysEditor {
             }
         }
 
-        Pattern keyPattern = Pattern.compile("^\\s*([^#!\\s=:][^\\s=:]*)\\s*[=:]");
+        // A key can also be separated from its value by whitespace, like "extra-keys [...]".
+        Pattern keyPattern = Pattern.compile("^\\s*([^#!\\s=:][^\\s=:]*)\\s*(?:[=:]|\\s)");
         List<String> output = new ArrayList<>();
         List<String> written = new ArrayList<>();
+        // True while the old value of a replaced key goes on over several lines (a trailing backslash).
+        boolean inReplacedValue = false;
         for (String line : lines) {
+            if (inReplacedValue) {
+                // Drop the rest of the old value, the new value replaces all of it.
+                inReplacedValue = endsWithContinuation(line);
+                continue;
+            }
             Matcher matcher = keyPattern.matcher(line);
             if (matcher.find() && values.containsKey(matcher.group(1))) {
                 String key = matcher.group(1);
@@ -561,6 +569,7 @@ public final class ExtraKeysEditor {
                     output.add(key + " = " + escapeValue(values.get(key)));
                     written.add(key);
                 }
+                inReplacedValue = endsWithContinuation(line);
             } else {
                 output.add(line);
             }
@@ -576,6 +585,13 @@ public final class ExtraKeysEditor {
         try (Writer writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.ISO_8859_1)) {
             for (String line : output) writer.write(line + "\n");
         }
+    }
+
+    /** Whether the line ends with an odd number of backslashes, so the value goes on in the next line. */
+    private static boolean endsWithContinuation(String line) {
+        int count = 0;
+        for (int i = line.length() - 1; i >= 0 && line.charAt(i) == '\\'; i--) count++;
+        return count % 2 == 1;
     }
 
     private static String escapeValue(String value) {

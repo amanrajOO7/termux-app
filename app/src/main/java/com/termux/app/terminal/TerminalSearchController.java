@@ -1,6 +1,8 @@
 package com.termux.app.terminal;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -35,12 +37,20 @@ public class TerminalSearchController {
 
     private static final int NONE = Integer.MIN_VALUE;
 
+    /** How long to wait after the last typed character before searching, a search goes over the whole history. */
+    private static final int SEARCH_DELAY_MS = 200;
+
     private final TermuxActivity mActivity;
     private final View mBar;
     private final View mTabsBar;
     private final EditText mInput;
     private final TextView mCount;
     private final float mDensity;
+    private final Handler mHandler = new Handler(Looper.getMainLooper());
+    private final Runnable mSearchLater = () -> {
+        mCurrentRow = NONE;
+        search();
+    };
 
     /** The row of the current match, rows in the history are negative. */
     private int mCurrentRow = NONE;
@@ -62,8 +72,8 @@ public class TerminalSearchController {
             @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
             @Override public void onTextChanged(CharSequence s, int start, int before, int count) { }
             @Override public void afterTextChanged(Editable s) {
-                mCurrentRow = NONE;
-                search();
+                mHandler.removeCallbacks(mSearchLater);
+                mHandler.postDelayed(mSearchLater, SEARCH_DELAY_MS);
             }
         });
         mInput.setOnEditorActionListener((v, actionId, event) -> {
@@ -99,6 +109,7 @@ public class TerminalSearchController {
 
     public void close() {
         if (!isOpen()) return;
+        mHandler.removeCallbacks(mSearchLater);
         mBar.setVisibility(View.GONE);
         mCount.setText("");
         mCurrentRow = NONE;
