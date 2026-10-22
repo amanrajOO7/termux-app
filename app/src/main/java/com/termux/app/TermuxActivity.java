@@ -8,8 +8,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.util.Xml;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -724,18 +733,45 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
 
     /**
      * The color scheme and font that Termux:Styling applied last, shown under the Style row. Termux:Styling
-     * shares the user id of this app, so its preferences can be read. Returns null if it is not installed.
+     * shares the user id of this app, so its preferences file can be read. Returns null if it is not installed.
      */
     private String getStylingSummary() {
         try {
             Context styling = createPackageContext(TermuxConstants.TERMUX_STYLING_PACKAGE_NAME, Context.CONTEXT_IGNORE_SECURITY);
-            SharedPreferences prefs = styling.getSharedPreferences("style", Context.MODE_PRIVATE);
+            // The file is read directly, because SharedPreferences keeps the values it read first, so changes
+            // made by Termux:Styling would not show until this app restarts.
+            Map<String, String> values = readStylePrefs(new File(styling.getDataDir(), "shared_prefs/style.xml"));
             String defaultName = getString(R.string.styling_default_name);
+            String color = values.get("color_title");
+            String font = values.get("font_title");
             return getString(R.string.styling_summary,
-                prefs.getString("color_title", defaultName), prefs.getString("font_title", defaultName));
+                color != null ? color : defaultName, font != null ? font : defaultName);
         } catch (PackageManager.NameNotFoundException e) {
             return null;
         }
+    }
+
+    /** The string values of a SharedPreferences XML file. Returns an empty map if it can't be read. */
+    private static Map<String, String> readStylePrefs(File file) {
+        Map<String, String> values = new HashMap<>();
+        if (!file.isFile()) return values;
+        try (InputStream in = new FileInputStream(file)) {
+            XmlPullParser parser = Xml.newPullParser();
+            parser.setInput(in, StandardCharsets.UTF_8.name());
+            String name = null;
+            for (int event = parser.getEventType(); event != XmlPullParser.END_DOCUMENT; event = parser.next()) {
+                if (event == XmlPullParser.START_TAG && "string".equals(parser.getName())) {
+                    name = parser.getAttributeValue(null, "name");
+                } else if (event == XmlPullParser.TEXT && name != null) {
+                    values.put(name, parser.getText());
+                } else if (event == XmlPullParser.END_TAG && "string".equals(parser.getName())) {
+                    name = null;
+                }
+            }
+        } catch (IOException | XmlPullParserException e) {
+            // Fall back to the default names.
+        }
+        return values;
     }
 
     private void showStylingPluginDialog() {
