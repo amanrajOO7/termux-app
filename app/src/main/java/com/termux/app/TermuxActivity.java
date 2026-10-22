@@ -181,6 +181,9 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
      */
     private boolean mIsInvalidState;
 
+    /** Whether {@link #mTermuxActivityBroadcastReceiver} is registered, see {@link #onCreate}. */
+    private boolean mTermuxActivityReceiverRegistered;
+
     private int mNavBarHeight;
 
     private float mTerminalToolbarDefaultHeight;
@@ -246,6 +249,8 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
 
         mTerminalSearchController = new TerminalSearchController(this);
 
+        registerTermuxActivityBroadcastReceiver();
+
         setTerminalToolbarView(savedInstanceState);
 
         setSettingsButtonView();
@@ -301,7 +306,6 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
         if (mPreferences.isTerminalMarginAdjustmentEnabled())
             addTermuxActivityRootViewGlobalLayoutListener();
 
-        registerTermuxActivityBroadcastReceiver();
     }
 
     @Override
@@ -312,8 +316,12 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
 
         if (mIsInvalidState) return;
 
-        if (mTermuxTerminalSessionActivityClient != null)
+        if (mTermuxTerminalSessionActivityClient != null) {
             mTermuxTerminalSessionActivityClient.onResume();
+            // A style may have been changed while Termux was in the background, so apply the background.
+            mTermuxTerminalSessionActivityClient.updateBackgroundColor();
+        }
+        if (mTerminalView != null) mTerminalView.onScreenUpdated();
 
         // The show session tabs preference may have changed in the settings.
         updateTerminalTabs();
@@ -346,7 +354,6 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
 
         removeTermuxActivityRootViewGlobalLayoutListener();
 
-        unregisterTermuxActivityBroadcastReceiver();
         getDrawer().closeDrawers();
     }
 
@@ -355,6 +362,8 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
         super.onDestroy();
 
         Logger.logDebug(LOG_TAG, "onDestroy");
+
+        unregisterTermuxActivityBroadcastReceiver();
 
         if (mIsInvalidState) return;
 
@@ -908,16 +917,22 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
     }
 
     private void registerTermuxActivityBroadcastReceiver() {
+        if (mTermuxActivityReceiverRegistered) return;
+
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(TERMUX_ACTIVITY.ACTION_NOTIFY_APP_CRASH);
         intentFilter.addAction(TERMUX_ACTIVITY.ACTION_RELOAD_STYLE);
         intentFilter.addAction(TERMUX_ACTIVITY.ACTION_REQUEST_PERMISSIONS);
 
         registerReceiver(mTermuxActivityBroadcastReceiver, intentFilter);
+        mTermuxActivityReceiverRegistered = true;
     }
 
     private void unregisterTermuxActivityBroadcastReceiver() {
+        if (!mTermuxActivityReceiverRegistered) return;
+
         unregisterReceiver(mTermuxActivityBroadcastReceiver);
+        mTermuxActivityReceiverRegistered = false;
     }
 
     private void fixTermuxActivityBroadcastReceiverIntent(Intent intent) {
@@ -935,7 +950,15 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
         public void onReceive(Context context, Intent intent) {
             if (intent == null) return;
 
-            if (mIsVisible) {
+            if (!mIsVisible) {
+                // Termux is in the background, for example while Termux:Styling is on top after a color
+                // scheme or font was applied. Apply it now, the rest is done when Termux is visible again.
+                if (TERMUX_ACTIVITY.ACTION_RELOAD_STYLE.equals(intent.getAction()) && mTermuxTerminalSessionActivityClient != null)
+                    mTermuxTerminalSessionActivityClient.checkForFontAndColors();
+                return;
+            }
+
+            {
                 fixTermuxActivityBroadcastReceiverIntent(intent);
 
                 switch (intent.getAction()) {

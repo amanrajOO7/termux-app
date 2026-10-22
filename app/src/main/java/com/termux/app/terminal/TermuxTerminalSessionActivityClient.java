@@ -26,6 +26,7 @@ import com.termux.shared.termux.settings.properties.TermuxPropertyConstants;
 import com.termux.shared.termux.terminal.io.BellHandler;
 import com.termux.shared.logger.Logger;
 import com.termux.terminal.TerminalColors;
+import com.termux.terminal.TextStyle;
 import com.termux.terminal.TerminalSession;
 import com.termux.terminal.TerminalSessionClient;
 
@@ -530,6 +531,14 @@ public class TermuxTerminalSessionActivityClient extends TermuxTerminalSessionCl
         if (!mActivity.isVisible()) return;
         mActivity.getWindow().getDecorView().setBackgroundColor(
             MaterialColors.getColor(mActivity, com.google.android.material.R.attr.colorSurfaceContainer, 0xFF000000));
+
+        // The renderer only paints cells whose background differs from the default one, so the default
+        // background is the one of the terminal view, which is the background of the color scheme.
+        TerminalSession session = mActivity.getCurrentSession();
+        if (session != null && session.getEmulator() != null) {
+            mActivity.getTerminalView().setBackgroundColor(
+                session.getEmulator().mColors.mCurrentColors[TextStyle.COLOR_INDEX_BACKGROUND]);
+        }
     }
 
 }
