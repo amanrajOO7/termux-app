@@ -677,32 +677,35 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
         boolean autoFillEnabled = mTerminalView.isAutoFillEnabled();
 
         ContextActionSheet sheet = new ContextActionSheet(this)
-            .addQuickAction(R.string.action_paste, true, () -> currentSession.onPasteTextFromClipboard())
-            .addQuickAction(R.string.action_select_url, true, () -> mTermuxTerminalViewClient.showUrlSelection())
-            .addQuickAction(R.string.action_share, true, () -> mTermuxTerminalViewClient.shareSessionTranscript());
+            .addQuickAction(R.drawable.ic_action_paste, R.string.action_paste, true, () -> currentSession.onPasteTextFromClipboard())
+            .addQuickAction(R.drawable.ic_action_link, R.string.action_select_url, true, () -> mTermuxTerminalViewClient.showUrlSelection())
+            .addQuickAction(R.drawable.ic_share, R.string.action_share, true, () -> mTermuxTerminalViewClient.shareSessionTranscript());
 
         if (!DataUtils.isNullOrEmpty(mTerminalView.getStoredSelectedText()))
-            sheet.addRow(R.string.action_share_selected_text, true, () -> mTermuxTerminalViewClient.shareSelectedText());
+            sheet.addRow(R.drawable.ic_share, getText(R.string.action_share_selected_text), true, () -> mTermuxTerminalViewClient.shareSelectedText());
         if (autoFillEnabled) {
-            sheet.addRow(R.string.action_autofill_username, true, () -> mTerminalView.requestAutoFillUsername());
-            sheet.addRow(R.string.action_autofill_password, true, () -> mTerminalView.requestAutoFillPassword());
+            sheet.addRow(R.drawable.ic_preference_keyboard, getText(R.string.action_autofill_username), true, () -> mTerminalView.requestAutoFillUsername());
+            sheet.addRow(R.drawable.ic_preference_keyboard, getText(R.string.action_autofill_password), true, () -> mTerminalView.requestAutoFillPassword());
         }
 
-        sheet.addRow(R.string.action_reset_terminal, true, () -> onResetTerminalSession(currentSession))
-            .addRow(getResources().getString(R.string.action_kill_process, currentSession.getPid()), currentSession.isRunning(),
+        sheet.addDivider()
+            .addRow(R.drawable.ic_action_search, getText(R.string.action_search_scrollback), true, () -> mTerminalSearchController.open())
+            .addRow(R.drawable.ic_action_reset, getText(R.string.action_reset_terminal), true, () -> onResetTerminalSession(currentSession))
+            .addRow(R.drawable.ic_action_kill, getResources().getString(R.string.action_kill_process, currentSession.getPid()), currentSession.isRunning(),
                 () -> showKillSessionDialog(currentSession))
-            .addRow(R.string.action_search_scrollback, true, () -> mTerminalSearchController.open())
-            .addRow(R.string.action_edit_extra_keys, true, () -> ExtraKeysEditor.show(this))
-            .addRow(getText(R.string.action_style_terminal), getStylingSummary(), true, () -> showStylingPluginDialog())
-            .addSwitchRow(R.string.action_terminal_material_background, mPreferences.shouldTerminalUseMaterialBackground(), checked -> {
+            .addDivider()
+            .addRow(R.drawable.ic_preference_keyboard, getText(R.string.action_edit_extra_keys), true, () -> ExtraKeysEditor.show(this))
+            .addRow(R.drawable.ic_action_palette, getText(R.string.action_style_terminal), getStylingSummary(), true, () -> showStylingPluginDialog())
+            .addSwitchRow(R.drawable.ic_preference_terminal, R.string.action_terminal_material_background, mPreferences.shouldTerminalUseMaterialBackground(), checked -> {
                 mPreferences.setTerminalUseMaterialBackground(checked);
                 mTermuxTerminalSessionActivityClient.updateBackgroundColor();
                 mTerminalView.onScreenUpdated();
             })
-            .addSwitchRow(R.string.action_toggle_keep_screen_on, mPreferences.shouldKeepScreenOn(), checked -> toggleKeepScreenOn())
-            .addRow(R.string.action_open_help, true, () -> ActivityUtils.startActivity(this, new Intent(this, HelpActivity.class)))
-            .addRow(R.string.action_open_settings, true, () -> ActivityUtils.startActivity(this, new Intent(this, SettingsActivity.class)))
-            .addRow(R.string.action_report_issue, true, () -> mTermuxTerminalViewClient.reportIssueFromTranscript())
+            .addSwitchRow(R.drawable.ic_preference_info, R.string.action_toggle_keep_screen_on, mPreferences.shouldKeepScreenOn(), checked -> toggleKeepScreenOn())
+            .addDivider()
+            .addRow(R.drawable.ic_settings, getText(R.string.action_open_settings), true, () -> ActivityUtils.startActivity(this, new Intent(this, SettingsActivity.class)))
+            .addRow(R.drawable.ic_preference_info, getText(R.string.action_open_help), true, () -> ActivityUtils.startActivity(this, new Intent(this, HelpActivity.class)))
+            .addRow(R.drawable.ic_preference_bug, getText(R.string.action_report_issue), true, () -> mTermuxTerminalViewClient.reportIssueFromTranscript())
             // Unset the stored selected text, it is also needed to be unset when the old menu was closed.
             .setOnDismiss(() -> mTerminalView.onContextMenuClosed(null))
             .show();

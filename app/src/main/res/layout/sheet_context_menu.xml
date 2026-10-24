@@ -9,6 +9,16 @@
         android:orientation="vertical"
         android:paddingBottom="16dp">
 
+        <!-- Material 3 drag handle. -->
+        <View
+            android:layout_width="32dp"
+            android:layout_height="4dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/sheet_drag_handle"
+            android:importantForAccessibility="no" />
+
         <!-- Quick actions, filled in by ContextActionSheet. -->
         <LinearLayout
             android:id="@+id/sheet_quick_actions"
