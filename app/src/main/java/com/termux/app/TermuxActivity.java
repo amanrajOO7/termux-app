@@ -10,6 +10,7 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.util.DisplayMetrics;
 import android.util.Xml;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -753,6 +754,7 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
         String defaultName = getString(R.string.styling_default_name);
         String color = null;
         String font = null;
+        boolean stylingInstalled = false;
 
         // Check if a style properties file exists in ~/.termux/
         File stylePropsFile = TermuxConstants.TERMUX_STYLE_PROPERTIES_FILE;
@@ -762,21 +764,33 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
                 props.load(in);
                 color = props.getProperty("color_title", props.getProperty("color"));
                 font = props.getProperty("font_title", props.getProperty("font"));
-            } catch (IOException ignored) {
+                if (color != null && color.trim().isEmpty()) color = null;
+                if (font != null && font.trim().isEmpty()) font = null;
+            } catch (IOException | IllegalArgumentException ignored) {
             }
         }
 
-        if (color == null && font == null) {
+        if (color == null || font == null) {
             try {
                 Context styling = createPackageContext(TermuxConstants.TERMUX_STYLING_PACKAGE_NAME, Context.CONTEXT_IGNORE_SECURITY);
+                stylingInstalled = true;
                 // The file is read directly, because SharedPreferences keeps the values it read first, so changes
                 // made by Termux:Styling would not show until this app restarts.
                 Map<String, String> values = readStylePrefs(new File(styling.getDataDir(), "shared_prefs/style.xml"));
-                color = values.get("color_title");
-                font = values.get("font_title");
-            } catch (PackageManager.NameNotFoundException e) {
-                return null;
+                if (color == null) {
+                    color = values.get("color_title");
+                    if (color != null && color.trim().isEmpty()) color = null;
+                }
+                if (font == null) {
+                    font = values.get("font_title");
+                    if (font != null && font.trim().isEmpty()) font = null;
+                }
+            } catch (PackageManager.NameNotFoundException ignored) {
             }
+        }
+
+        if (!stylingInstalled && color == null && font == null) {
+            return null;
         }
 
         return getString(R.string.styling_summary,
@@ -912,12 +926,14 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
         return (DrawerLayout) findViewById(R.id.drawer_layout);
     }
 
-    /** Set the left drawer width to a percentage of the screen width. */
+    /** Set the left drawer width to a percentage of the screen width with a maximum limit. */
     public void setDrawerWidth() {
         View drawer = findViewById(R.id.left_drawer);
         if (drawer == null) return;
-        int screenWidth = getResources().getDisplayMetrics().widthPixels;
-        int drawerWidth = (int) (screenWidth * 0.80f);
+        DisplayMetrics metrics = getResources().getDisplayMetrics();
+        int screenWidth = metrics.widthPixels;
+        int maxDrawerWidth = (int) (320 * metrics.density);
+        int drawerWidth = Math.min((int) (screenWidth * 0.80f), maxDrawerWidth);
         ViewGroup.LayoutParams params = drawer.getLayoutParams();
         if (params != null) {
             params.width = drawerWidth;
