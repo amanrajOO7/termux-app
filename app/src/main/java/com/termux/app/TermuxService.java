@@ -18,6 +18,7 @@ import android.os.PowerManager;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.google.android.material.color.MaterialColors;
 import com.termux.R;
 import com.termux.app.event.SystemEventReceiver;
 import com.termux.app.terminal.TermuxTerminalSessionActivityClient;
@@ -818,8 +819,8 @@ public final class TermuxService extends Service implements AppShell.AppShellCli
         // Set notification icon
         builder.setSmallIcon(R.drawable.ic_service_notification);
 
-        // Set background color for small notification icon
-        builder.setColor(0xFF607D8B);
+        // Set background color for small notification icon using theme primary
+        builder.setColor(MaterialColors.getColor(this, com.google.android.material.R.attr.colorPrimary, 0xFF607D8B));
 
         // TermuxSessions are always ongoing
         builder.setOngoing(true);

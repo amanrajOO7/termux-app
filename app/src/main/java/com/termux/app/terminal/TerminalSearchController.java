@@ -68,10 +68,18 @@ public class TerminalSearchController {
         activity.findViewById(R.id.terminal_search_next).setOnClickListener(v -> step(1));
         activity.findViewById(R.id.terminal_search_close).setOnClickListener(v -> close());
 
+        View clearButton = activity.findViewById(R.id.terminal_search_clear);
+        if (clearButton != null) {
+            clearButton.setOnClickListener(v -> mInput.setText(""));
+        }
+
         mInput.addTextChangedListener(new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
             @Override public void onTextChanged(CharSequence s, int start, int before, int count) { }
             @Override public void afterTextChanged(Editable s) {
+                if (clearButton != null) {
+                    clearButton.setVisibility(s != null && s.length() > 0 ? View.VISIBLE : View.GONE);
+                }
                 mHandler.removeCallbacks(mSearchLater);
                 mHandler.postDelayed(mSearchLater, SEARCH_DELAY_MS);
             }

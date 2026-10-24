@@ -28,6 +28,12 @@ import android.view.ViewGroup;
 import android.widget.GridLayout;
 import android.widget.PopupWindow;
 
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.RelativeSizeSpan;
+import android.text.style.SuperscriptSpan;
+import androidx.core.graphics.ColorUtils;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -409,7 +415,18 @@ public final class ExtraKeysView extends GridLayout {
                     button = new MaterialButton(getContext(), null, android.R.attr.buttonBarButtonStyle);
                 }
 
-                button.setText(buttonInfo.getDisplay());
+                if (buttonInfo.getPopup() != null) {
+                    SpannableStringBuilder ssb = new SpannableStringBuilder(buttonInfo.getDisplay());
+                    String popupText = " " + buttonInfo.getPopup().getDisplay();
+                    int start = ssb.length();
+                    ssb.append(popupText);
+                    ssb.setSpan(new SuperscriptSpan(), start, ssb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    ssb.setSpan(new RelativeSizeSpan(0.6f), start, ssb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    ssb.setSpan(new ForegroundColorSpan(ColorUtils.setAlphaComponent(mButtonTextColor, 0x88)), start, ssb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    button.setText(ssb);
+                } else {
+                    button.setText(buttonInfo.getDisplay());
+                }
                 button.setTextColor(mButtonTextColor);
                 button.setAllCaps(mButtonTextAllCaps);
                 button.setPadding(0, 0, 0, 0);
