@@ -171,7 +171,7 @@ public class TerminalTabsController {
             View dot = new View(context);
             GradientDrawable dotShape = new GradientDrawable();
             dotShape.setShape(GradientDrawable.OVAL);
-            dotShape.setColor(color(context, com.google.android.material.R.attr.colorError, Color.RED));
+            dotShape.setColor(color(context, androidx.appcompat.R.attr.colorError, Color.RED));
             dot.setBackground(dotShape);
             dot.setContentDescription(context.getString(R.string.title_exit_status, session.getExitStatus()));
             LinearLayout.LayoutParams dotParams = new LinearLayout.LayoutParams(dp(7), dp(7));

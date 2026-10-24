@@ -820,7 +820,7 @@ public final class TermuxService extends Service implements AppShell.AppShellCli
         builder.setSmallIcon(R.drawable.ic_service_notification);
 
         // Set background color for small notification icon using theme primary
-        builder.setColor(MaterialColors.getColor(this, com.google.android.material.R.attr.colorPrimary, 0xFF607D8B));
+        builder.setColor(MaterialColors.getColor(this, androidx.appcompat.R.attr.colorPrimary, 0xFF607D8B));
 
         // TermuxSessions are always ongoing
         builder.setOngoing(true);

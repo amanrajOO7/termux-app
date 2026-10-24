@@ -295,6 +295,7 @@
     <string name="action_tab_close_others">Close other tabs</string>
     <string name="msg_confirm_close_other_tabs">Close all other tabs? Running processes in them will be killed.</string>
     <string name="tab_unread_output">New output</string>
+    <string name="title_exit_status">Exit status %d</string>
 
 
 </resources>
