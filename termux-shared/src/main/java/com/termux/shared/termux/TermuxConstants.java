@@ -772,6 +772,11 @@ public final class TermuxConstants {
     /** Termux app and Termux:Styling font.ttf file */
     public static final File TERMUX_FONT_FILE = new File(TERMUX_FONT_FILE_PATH);
 
+    /** Termux app and Termux:Styling style.properties file path */
+    public static final String TERMUX_STYLE_PROPERTIES_FILE_PATH = TERMUX_DATA_HOME_DIR_PATH + "/style.properties"; // Default: "/data/data/com.termux/files/home/.termux/style.properties"
+    /** Termux app and Termux:Styling style.properties file */
+    public static final File TERMUX_STYLE_PROPERTIES_FILE = new File(TERMUX_STYLE_PROPERTIES_FILE_PATH);
+
 
     /** Termux app and plugins crash log file path */
     public static final String TERMUX_CRASH_LOG_FILE_PATH = TERMUX_HOME_DIR_PATH + "/crash_log.md"; // Default: "/data/data/com.termux/files/home/crash_log.md"

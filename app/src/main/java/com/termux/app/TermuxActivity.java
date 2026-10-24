@@ -20,6 +20,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -744,23 +745,42 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
     }
 
     /**
-     * The color scheme and font that Termux:Styling applied last, shown under the Style row. Termux:Styling
-     * shares the user id of this app, so its preferences file can be read. Returns null if it is not installed.
+     * The color scheme and font that Termux:Styling applied last, shown under the Style row.
+     * Checks ~/.termux/style.properties first, falling back to reading the styling app's preferences.
+     * Returns null if Termux:Styling is not installed and no style properties file exists.
      */
     private String getStylingSummary() {
-        try {
-            Context styling = createPackageContext(TermuxConstants.TERMUX_STYLING_PACKAGE_NAME, Context.CONTEXT_IGNORE_SECURITY);
-            // The file is read directly, because SharedPreferences keeps the values it read first, so changes
-            // made by Termux:Styling would not show until this app restarts.
-            Map<String, String> values = readStylePrefs(new File(styling.getDataDir(), "shared_prefs/style.xml"));
-            String defaultName = getString(R.string.styling_default_name);
-            String color = values.get("color_title");
-            String font = values.get("font_title");
-            return getString(R.string.styling_summary,
-                color != null ? color : defaultName, font != null ? font : defaultName);
-        } catch (PackageManager.NameNotFoundException e) {
-            return null;
+        String defaultName = getString(R.string.styling_default_name);
+        String color = null;
+        String font = null;
+
+        // Check if a style properties file exists in ~/.termux/
+        File stylePropsFile = TermuxConstants.TERMUX_STYLE_PROPERTIES_FILE;
+        if (stylePropsFile.isFile()) {
+            try (InputStream in = new FileInputStream(stylePropsFile)) {
+                Properties props = new Properties();
+                props.load(in);
+                color = props.getProperty("color_title", props.getProperty("color"));
+                font = props.getProperty("font_title", props.getProperty("font"));
+            } catch (IOException ignored) {
+            }
         }
+
+        if (color == null && font == null) {
+            try {
+                Context styling = createPackageContext(TermuxConstants.TERMUX_STYLING_PACKAGE_NAME, Context.CONTEXT_IGNORE_SECURITY);
+                // The file is read directly, because SharedPreferences keeps the values it read first, so changes
+                // made by Termux:Styling would not show until this app restarts.
+                Map<String, String> values = readStylePrefs(new File(styling.getDataDir(), "shared_prefs/style.xml"));
+                color = values.get("color_title");
+                font = values.get("font_title");
+            } catch (PackageManager.NameNotFoundException e) {
+                return null;
+            }
+        }
+
+        return getString(R.string.styling_summary,
+            color != null ? color : defaultName, font != null ? font : defaultName);
     }
 
     /** The string values of a SharedPreferences XML file. Returns an empty map if it can't be read. */
