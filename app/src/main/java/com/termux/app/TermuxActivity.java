@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.util.Xml;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -227,6 +228,8 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
 
         setContentView(R.layout.activity_termux);
 
+        setDrawerWidth();
+
         // Load termux shared preferences
         // This will also fail if TermuxConstants.TERMUX_PACKAGE_NAME does not equal applicationId
         mPreferences = TermuxAppSharedPreferences.build(this, true);
@@ -398,6 +401,12 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
         super.onSaveInstanceState(savedInstanceState);
         saveTerminalToolbarTextInput(savedInstanceState);
         savedInstanceState.putBoolean(ARG_ACTIVITY_RECREATED, true);
+    }
+
+    @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        setDrawerWidth();
     }
 
 
@@ -881,6 +890,19 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
 
     public DrawerLayout getDrawer() {
         return (DrawerLayout) findViewById(R.id.drawer_layout);
+    }
+
+    /** Set the left drawer width to a percentage of the screen width. */
+    public void setDrawerWidth() {
+        View drawer = findViewById(R.id.left_drawer);
+        if (drawer == null) return;
+        int screenWidth = getResources().getDisplayMetrics().widthPixels;
+        int drawerWidth = (int) (screenWidth * 0.80f);
+        ViewGroup.LayoutParams params = drawer.getLayoutParams();
+        if (params != null) {
+            params.width = drawerWidth;
+            drawer.setLayoutParams(params);
+        }
     }
 
 
