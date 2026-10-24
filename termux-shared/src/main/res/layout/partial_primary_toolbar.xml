@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <androidx.appcompat.widget.Toolbar
+    <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
@@ -19,6 +19,6 @@
         app:titleTextColor="?attr/colorOnSurface"
         app:subtitleTextAppearance="@style/TextAppearance.Widget.BaseToolbar.Subtitle"
         app:subtitleTextColor="?attr/colorOnSurfaceVariant">
-    </androidx.appcompat.widget.Toolbar>
+    </com.google.android.material.appbar.MaterialToolbar>
 
 </LinearLayout>
