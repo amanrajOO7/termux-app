@@ -137,6 +137,10 @@ public final class TermuxPreferenceConstants {
         public static final String KEY_SHOW_SESSION_TABS = "show_session_tabs";
         public static final boolean DEFAULT_VALUE_SHOW_SESSION_TABS = true;
 
+        /** Defines the key for whether to auto-hide the session tab bar when only one session is open. */
+        public static final String KEY_AUTO_HIDE_SINGLE_SESSION_TAB = "auto_hide_single_session_tab";
+        public static final boolean DEFAULT_VALUE_AUTO_HIDE_SINGLE_SESSION_TAB = false;
+
         /** Defines the key for whether the terminal background stays the app color instead of the color scheme background. */
         public static final String KEY_TERMINAL_MATERIAL_BACKGROUND = "terminal_material_background";
         public static final boolean DEFAULT_VALUE_TERMINAL_MATERIAL_BACKGROUND = true;

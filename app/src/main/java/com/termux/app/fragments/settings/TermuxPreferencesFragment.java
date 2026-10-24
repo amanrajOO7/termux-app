@@ -53,6 +53,7 @@ class TermuxPreferencesDataStore extends PreferenceDataStore {
     public void putBoolean(String key, boolean value) {
         if (mPreferences == null || key == null) return;
         if ("show_session_tabs".equals(key)) mPreferences.setShowSessionTabs(value);
+        if ("auto_hide_single_session_tab".equals(key)) mPreferences.setAutoHideSingleSessionTab(value);
         if ("terminal_material_background".equals(key)) mPreferences.setTerminalUseMaterialBackground(value);
     }
 
@@ -60,6 +61,7 @@ class TermuxPreferencesDataStore extends PreferenceDataStore {
     public boolean getBoolean(String key, boolean defValue) {
         if (mPreferences == null || key == null) return defValue;
         if ("show_session_tabs".equals(key)) return mPreferences.shouldShowSessionTabs();
+        if ("auto_hide_single_session_tab".equals(key)) return mPreferences.shouldAutoHideSingleSessionTab();
         if ("terminal_material_background".equals(key)) return mPreferences.shouldTerminalUseMaterialBackground();
         return defValue;
     }

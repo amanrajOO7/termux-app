@@ -26,6 +26,14 @@
         app:summaryOn="@string/termux_show_session_tabs_summary_on" />
 
     <SwitchPreferenceCompat
+        app:key="auto_hide_single_session_tab"
+        app:dependency="show_session_tabs"
+        app:icon="@drawable/ic_preference_terminal"
+        app:title="@string/termux_auto_hide_single_session_tab_title"
+        app:summaryOff="@string/termux_auto_hide_single_session_tab_summary_off"
+        app:summaryOn="@string/termux_auto_hide_single_session_tab_summary_on" />
+
+    <SwitchPreferenceCompat
         app:key="terminal_material_background"
         app:icon="@drawable/ic_preference_terminal"
         app:title="@string/termux_material_background_title"

@@ -119,6 +119,9 @@
     <string name="termux_show_session_tabs_title">Session tabs</string>
     <string name="termux_show_session_tabs_summary_on">Tabs for the open terminals are shown above the terminal</string>
     <string name="termux_show_session_tabs_summary_off">The open terminals are only listed in the drawer</string>
+    <string name="termux_auto_hide_single_session_tab_title">Hide tabs for single session</string>
+    <string name="termux_auto_hide_single_session_tab_summary_on">Session tabs are hidden when only one terminal is open</string>
+    <string name="termux_auto_hide_single_session_tab_summary_off">Session tabs are always shown</string>
     <string name="termux_material_background_title">Material background</string>
     <string name="termux_material_background_summary_on">The terminal background stays the app color, only the text follows the color scheme</string>
     <string name="termux_material_background_summary_off">The whole color scheme, including its background, is applied</string>

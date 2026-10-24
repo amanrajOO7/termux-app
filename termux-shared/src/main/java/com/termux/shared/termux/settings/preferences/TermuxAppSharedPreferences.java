@@ -140,6 +140,15 @@ public class TermuxAppSharedPreferences extends AppSharedPreferences {
         SharedPreferenceUtils.setBoolean(mSharedPreferences, TERMUX_APP.KEY_SHOW_SESSION_TABS, value, false);
     }
 
+    /** Whether to hide the session tab bar when only one session is open. */
+    public boolean shouldAutoHideSingleSessionTab() {
+        return SharedPreferenceUtils.getBoolean(mSharedPreferences, TERMUX_APP.KEY_AUTO_HIDE_SINGLE_SESSION_TAB, TERMUX_APP.DEFAULT_VALUE_AUTO_HIDE_SINGLE_SESSION_TAB);
+    }
+
+    public void setAutoHideSingleSessionTab(boolean value) {
+        SharedPreferenceUtils.setBoolean(mSharedPreferences, TERMUX_APP.KEY_AUTO_HIDE_SINGLE_SESSION_TAB, value, false);
+    }
+
     /** Whether the terminal background stays the app color, while only the text follows the color scheme. */
     public boolean shouldTerminalUseMaterialBackground() {
         return SharedPreferenceUtils.getBoolean(mSharedPreferences, TERMUX_APP.KEY_TERMINAL_MATERIAL_BACKGROUND, TERMUX_APP.DEFAULT_VALUE_TERMINAL_MATERIAL_BACKGROUND);

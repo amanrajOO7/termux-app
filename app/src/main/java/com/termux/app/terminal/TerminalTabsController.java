@@ -3,6 +3,7 @@ package com.termux.app.terminal;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.RippleDrawable;
@@ -77,6 +78,9 @@ public class TerminalTabsController {
     public void update() {
         TermuxService service = mActivity.getTermuxService();
         boolean show = service != null && mActivity.getPreferences().shouldShowSessionTabs();
+        if (show && mActivity.getPreferences().shouldAutoHideSingleSessionTab() && service.getTermuxSessionsSize() <= 1) {
+            show = false;
+        }
         mBar.setVisibility(show ? View.VISIBLE : View.GONE);
         if (!show) return;
 
@@ -150,20 +154,30 @@ public class TerminalTabsController {
         // A ripple in the text color, so the tap is visible on the colored pill.
         int highlight = ColorUtils.setAlphaComponent(foreground, 0x33);
 
+        boolean isRunning = session.isRunning();
+        boolean isFailed = !isRunning && session.getExitStatus() != 0;
+
         LinearLayout tab = new LinearLayout(context);
         tab.setOrientation(LinearLayout.HORIZONTAL);
         tab.setGravity(android.view.Gravity.CENTER_VERTICAL);
-        // 12dp from the edge to the label, and 12dp from the edge to the visible close stroke.
-        // The close button draws a 14dp icon with 5dp padding, and its stroke is about 10.5dp, so
-        // it is inset 6.75dp in its 24dp box, which the 5dp end padding makes up to 12dp.
-        tab.setPadding(dp(12), 0, dp(5), 0);
+        tab.setPadding(dp(12), 0, dp(4), 0);
         tab.setBackground(new RippleDrawable(ColorStateList.valueOf(highlight), shape, null));
 
         LinearLayout.LayoutParams tabParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, dp(36));
         tabParams.setMarginEnd(dp(6));
         tab.setLayoutParams(tabParams);
 
-        if (mUnread.contains(session) && !selected) {
+        if (isFailed) {
+            View dot = new View(context);
+            GradientDrawable dotShape = new GradientDrawable();
+            dotShape.setShape(GradientDrawable.OVAL);
+            dotShape.setColor(color(context, com.google.android.material.R.attr.colorError, Color.RED));
+            dot.setBackground(dotShape);
+            dot.setContentDescription(context.getString(R.string.title_exit_status, session.getExitStatus()));
+            LinearLayout.LayoutParams dotParams = new LinearLayout.LayoutParams(dp(7), dp(7));
+            dotParams.setMarginEnd(dp(6));
+            tab.addView(dot, dotParams);
+        } else if (mUnread.contains(session) && !selected) {
             // A small dot for output that was not seen yet, in the accent color of the tab text.
             View dot = new View(context);
             GradientDrawable dotShape = new GradientDrawable();
@@ -182,6 +196,9 @@ public class TerminalTabsController {
         label.setTextColor(foreground);
         label.setMaxLines(1);
         label.setTypeface(selected ? Typeface.DEFAULT_BOLD : Typeface.DEFAULT);
+        if (!isRunning) {
+            label.setPaintFlags(label.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+        }
         // Remove the extra font padding above and below the text, so the glyphs are centred
         // in the tab and line up with the close icon.
         label.setIncludeFontPadding(false);
@@ -189,15 +206,16 @@ public class TerminalTabsController {
 
         ImageButton close = new ImageButton(context);
         close.setImageResource(R.drawable.ic_tab_close);
-        close.setBackground(null);
         close.setContentDescription(context.getString(R.string.action_close_tab));
-        // 24dp touch target with a 14dp icon: the icon stroke is about the cap height of the label.
-        close.setPadding(dp(5), dp(5), dp(5), dp(5));
+        // Expanded touch target with circular ripple and centered 14dp icon
+        close.setPadding(dp(9), dp(9), dp(9), dp(9));
+        GradientDrawable closeMask = new GradientDrawable();
+        closeMask.setShape(GradientDrawable.OVAL);
+        close.setBackground(new RippleDrawable(ColorStateList.valueOf(highlight), null, closeMask));
         ImageViewCompat.setImageTintList(close, ColorStateList.valueOf(foreground));
         close.setOnClickListener(v -> closeTab(session));
-        LinearLayout.LayoutParams closeParams = new LinearLayout.LayoutParams(dp(24), dp(24));
-        // About 8dp between the end of the label and the visible close stroke.
-        closeParams.setMarginStart(dp(1));
+        LinearLayout.LayoutParams closeParams = new LinearLayout.LayoutParams(dp(32), dp(32));
+        closeParams.setMarginStart(dp(2));
         tab.addView(close, closeParams);
 
         tab.setOnClickListener(v -> {
