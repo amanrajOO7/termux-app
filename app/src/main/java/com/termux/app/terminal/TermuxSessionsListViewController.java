@@ -104,6 +104,21 @@ public class TermuxSessionsListViewController extends ArrayAdapter<TermuxSession
             (sessionFailed ? R.color.session_status_failed : R.color.session_status_finished);
         sessionStatusView.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(mActivity, statusColorRes)));
 
+        View sessionCloseView = sessionRowView.findViewById(R.id.session_close);
+        if (sessionCloseView != null) {
+            sessionCloseView.setOnClickListener(v -> {
+                if (sessionAtRow.isRunning()) {
+                    new com.google.android.material.dialog.MaterialAlertDialogBuilder(mActivity)
+                        .setMessage(R.string.title_confirm_kill_process)
+                        .setPositiveButton(android.R.string.yes, (dialog, which) -> sessionAtRow.finishIfRunning())
+                        .setNegativeButton(android.R.string.no, null)
+                        .show();
+                } else {
+                    mActivity.getTermuxTerminalSessionClient().removeFinishedSession(sessionAtRow);
+                }
+            });
+        }
+
         return sessionRowView;
     }
 

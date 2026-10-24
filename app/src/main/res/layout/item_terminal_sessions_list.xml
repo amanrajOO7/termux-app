@@ -5,6 +5,7 @@
   can be inset from the drawer edges.
 -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingHorizontal="8dp"
@@ -57,5 +58,17 @@
                 android:textSize="12sp"
                 android:textStyle="italic" />
         </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/session_close"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginStart="8dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/action_close_tab"
+            android:focusable="false"
+            android:padding="9dp"
+            android:src="@drawable/ic_tab_close"
+            app:tint="?attr/termuxSessionItemSubtitleColor" />
     </LinearLayout>
 </FrameLayout>
