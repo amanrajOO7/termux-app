@@ -61,7 +61,6 @@ public class ContextActionSheet {
         }
 
         static Item divider() {
-            Item item = new Item("", false, null, null, false, 0);
             return new Item(true);
         }
 
