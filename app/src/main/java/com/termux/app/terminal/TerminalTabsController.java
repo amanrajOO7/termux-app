@@ -3,7 +3,6 @@ package com.termux.app.terminal;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.RippleDrawable;
@@ -197,7 +196,7 @@ public class TerminalTabsController {
         label.setMaxLines(1);
         label.setTypeface(selected ? Typeface.DEFAULT_BOLD : Typeface.DEFAULT);
         if (!isRunning) {
-            label.setPaintFlags(label.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            label.setAlpha(0.6f);
         }
         // Remove the extra font padding above and below the text, so the glyphs are centred
         // in the tab and line up with the close icon.
