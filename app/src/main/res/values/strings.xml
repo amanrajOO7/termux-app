@@ -96,6 +96,19 @@
     <string name="action_edit_extra_keys">Edit extra keys</string>
     <string name="extra_keys_editor_title">Extra keys</string>
     <string name="extra_keys_editor_summary">Change the keys, their height and feedback</string>
+    <string name="backup_settings_title">Back up theme, font and properties</string>
+    <string name="backup_settings_summary">Save the color scheme, font and termux.properties to a zip file</string>
+    <string name="restore_settings_title">Restore theme, font and properties</string>
+    <string name="restore_settings_summary">Replace them with the settings in a backup file</string>
+    <string name="backup_done">Settings backed up.</string>
+    <string name="backup_nothing">Nothing to back up yet. Apply a color scheme, font or termux.properties first.</string>
+    <string name="backup_failed">Could not back up the settings.</string>
+    <string name="restore_confirm_title">Restore settings?</string>
+    <string name="restore_confirm_message">This replaces the current color scheme, font and termux.properties with the ones in the backup.</string>
+    <string name="restore_action">Restore</string>
+    <string name="restore_done">Settings restored.</string>
+    <string name="restore_failed">Could not restore. The file is not a valid Termux backup.</string>
+
     <string name="extra_keys_editor_hint">Tap a key to change, move or remove it. Keys marked with * have a popup or macro, they can be moved and removed, but have to be edited in termux.properties.</string>
     <string name="extra_keys_editor_add_row">Add row</string>
     <string name="extra_keys_editor_remove_row">Remove row</string>

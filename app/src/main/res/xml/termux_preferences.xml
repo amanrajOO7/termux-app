@@ -47,4 +47,18 @@
         app:summary="@string/extra_keys_editor_summary"
         app:persistent="false"/>
 
+    <Preference
+        app:key="backup_settings"
+        app:icon="@drawable/ic_preference_terminal"
+        app:title="@string/backup_settings_title"
+        app:summary="@string/backup_settings_summary"
+        app:persistent="false"/>
+
+    <Preference
+        app:key="restore_settings"
+        app:icon="@drawable/ic_preference_terminal"
+        app:title="@string/restore_settings_title"
+        app:summary="@string/restore_settings_summary"
+        app:persistent="false"/>
+
 </PreferenceScreen>
