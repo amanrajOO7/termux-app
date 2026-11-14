@@ -56,6 +56,10 @@ jobs:
           export TERMUX_APP_VERSION_NAME="$RELEASE_VERSION_NAME" # Used by app/build.gradle
           export TERMUX_APK_VERSION_TAG="$APK_VERSION_TAG" # Used by app/build.gradle
           export TERMUX_PACKAGE_VARIANT="$PACKAGE_VARIANT" # Used by app/build.gradle
+          # The native bootstrap build needs the bootstrap zips before the NDK step runs.
+          if ! ./gradlew downloadBootstraps; then
+            exit_on_error "Could not download the bootstrap archives."
+          fi
           if ! ./gradlew assembleRelease; then
             exit_on_error "Release build failed for '$APK_VERSION_TAG'."
           fi
